@@ -203,7 +203,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   <header class="mast">
     <div class="id">
       <div class="mark" aria-hidden="true">ز</div>
-      <div><b>جامعة الزاوية</b><span>المركز الإلكتروني للتعليم</span></div>
+      <div><b>جامعة الزاوية</b><span>مركز التعليم الإلكتروني</span></div>
     </div>
     <button class="icon-btn" id="themeBtn" type="button" aria-label="تبديل المظهر الفاتح والداكن"><svg class="i"><use href="#i-moon"/></svg></button>
   </header>
@@ -236,7 +236,6 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
     </div>
     <p class="empty" id="hNone" hidden style="margin-top:28px">لا توجد أداة بهذا الاسم.</p>
     <div id="sections"></div>
-    <footer><span>جامعة الزاوية · ليبيا</span><span>المركز الإلكتروني للتعليم · 2026</span></footer>
   </main>
 
   <!-- VISUALIZE -->
@@ -320,7 +319,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
       <button class="back" type="button" data-open="home"><svg class="i"><use href="#i-home"/></svg>الرئيسية</button>
       <h1 class="tool-title" style="color:var(--ink)">المحادثات</h1>
     </div>
-    <p class="tool-sub">محادثة مع Claude باللغة العربية. يتذكر الحوار داخل هذه الصفحة فقط، ويُمسح عند إغلاقها.</p>
+    <p class="tool-sub">محادثة مع Claude باللغة العربية. تُحفظ المحادثة في متصفحك فقط على هذا الجهاز، ويمكنك مسحها بزر «محادثة جديدة».</p>
     <section class="pane chat-pane" aria-label="المحادثة">
       <div class="msgs" id="cMsgs" aria-live="polite"><p class="empty">اكتب سؤالك أو مهمتك، مثل: «ساعدني في كتابة خطة أسبوعية لمقرر التعلم الإلكتروني».</p></div>
       <div class="chat-in">
@@ -370,6 +369,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
           <div class="chips" style="margin:0">
             <button class="tab" type="button" id="qReveal" disabled>إظهار كل الإجابات</button>
             <button class="tab" type="button" id="qCopy" disabled><svg class="i"><use href="#i-copy"/></svg>نسخ مع الإجابات</button>
+            <button class="tab" type="button" id="qSave" disabled><svg class="i"><use href="#i-down"/></svg>حفظ TXT</button>
           </div>
         </div>
         <div id="qOut" aria-live="polite"><p class="empty">ستظهر الأسئلة هنا. اضغط على أي خيار لترى هل إجابتك صحيحة.</p></div>
@@ -401,6 +401,11 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
       </section>
     </div>
   </main>
+
+  <footer>
+    <span><b>فكرة وتصميم: د. حسن الشيباني</b> · جامعة الزاوية · ليبيا</span>
+    <span>مركز التعليم الإلكتروني بجامعة الزاوية · 2026</span>
+  </footer>
 </div>
 
 <div class="toast" id="toast" role="status" hidden></div>
@@ -409,6 +414,13 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
 <script>
 (function () {
   "use strict";
+  /* عند الاستضافة خارج Claude (مثل GitHub Pages) ضع هنا رابط الوسيط، مثل: https://zawia-ai.example.workers.dev
+     اتركه فارغاً داخل Claude. راجع worker/README.md. */
+  var API_ENDPOINT = "";
+  var MAMMOTH_SRC = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js";
+  var PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  var PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  var PDF_MAX_PAGES = 60;
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   function ico(n) { return '<svg class="i" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
@@ -435,8 +447,11 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   $("#themeBtn").addEventListener("click", function () {
     var root = document.documentElement;
     var cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    root.setAttribute("data-theme", cur === "dark" ? "light" : "dark");
+    var next = cur === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("zawia.theme", next); } catch (e) {}
   });
+  try { var savedTheme = localStorage.getItem("zawia.theme"); if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme); } catch (e) {}
 
   /* ---------- home content ---------- */
   var SECTIONS = [
@@ -497,9 +512,134 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   $("#startBtn").addEventListener("click", function () { $("#sec0").scrollIntoView({ behavior: "smooth" }); });
   window.addEventListener("hashchange", function () { show((location.hash || "").replace("#", "")); });
 
+  /* ---------- helpers: save, load script, files ---------- */
+  function saveFile(name, data, mime) {
+    var ready = (window.claude && window.claude.use) ? window.claude.use("downloads") : Promise.resolve(null);
+    return ready.then(function (d) {
+      if (d) return d.save({ filename: name, data: data }).then(function () { toast("تم الحفظ"); },
+        function (e) { if (e && e.code !== "declined") toast("تعذّر الحفظ"); });
+      try {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([data], { type: mime || "text/plain" })); a.download = name;
+        document.body.appendChild(a); a.click(); a.remove(); toast("تم الحفظ");
+      } catch (e) { toast("تعذّر الحفظ. استخدم زر النسخ."); }
+    });
+  }
+  function loadScript(src) {
+    return new Promise(function (res, rej) {
+      var s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = function () { rej(new Error("load")); };
+      document.head.appendChild(s);
+    });
+  }
+  async function extractPdfText(lib, buf, maxPages) {
+    var pdf = await lib.getDocument({ data: buf }).promise;
+    var n = Math.min(pdf.numPages, maxPages), out = [];
+    for (var p = 1; p <= n; p++) {
+      var page = await pdf.getPage(p), tc = await page.getTextContent(), line = "", parts = [];
+      tc.items.forEach(function (it) {
+        line += it.str;
+        if (it.hasEOL) { parts.push(line); line = ""; } else if (it.str) { line += " "; }
+      });
+      if (line.trim()) parts.push(line);
+      out.push(parts.join("\n").replace(/[ \t]+/g, " ").trim());
+    }
+    return { text: out.join("\n\n").trim(), pages: pdf.numPages, read: n };
+  }
+  function loadPdfLib() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    return loadScript(PDFJS_SRC).then(function () {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+      return window.pdfjsLib;
+    });
+  }
+  function readFileText(f) {
+    var ext = (f.name.split(".").pop() || "").toLowerCase();
+    if (ext === "pdf") {
+      return loadPdfLib().then(function (lib) {
+        return f.arrayBuffer().then(function (b) { return extractPdfText(lib, b, PDF_MAX_PAGES); });
+      }).then(function (r) {
+        if (r.text.replace(/\s/g, "").length < 40) throw new Error("scan");
+        if (r.read < r.pages) toast("قُرئت أول " + r.read + " صفحة من " + r.pages + ".");
+        return r.text;
+      });
+    }
+    if (["txt", "md", "csv", "html", "htm", "json"].indexOf(ext) >= 0) {
+      return new Promise(function (res, rej) {
+        var r = new FileReader(); r.onload = function () { res(String(r.result)); }; r.onerror = function () { rej(new Error("read")); }; r.readAsText(f);
+      });
+    }
+    if (ext === "docx") {
+      return (window.mammoth ? Promise.resolve() : loadScript(MAMMOTH_SRC))
+        .then(function () { return f.arrayBuffer(); })
+        .then(function (b) { return window.mammoth.extractRawText({ arrayBuffer: b }); })
+        .then(function (r) { return r.value; });
+    }
+    return Promise.reject(new Error("type"));
+  }
+  function addFileButton(taId) {
+    var ta = $("#" + taId); if (!ta) return;
+    var wrap = document.createElement("div"); wrap.className = "chips"; wrap.style.marginBottom = "8px";
+    var btn = document.createElement("button"); btn.type = "button"; btn.className = "tab"; btn.innerHTML = ico("down") + "رفع ملف (PDF / DOCX / TXT / MD / CSV)";
+    var inp = document.createElement("input"); inp.type = "file"; inp.accept = ".pdf,.txt,.md,.csv,.html,.json,.docx"; inp.hidden = true;
+    btn.addEventListener("click", function () { inp.click(); });
+    inp.addEventListener("change", function () {
+      var f = inp.files && inp.files[0]; if (!f) return;
+      if (f.size > 8 * 1024 * 1024) { toast("الملف كبير. الحد الأقصى 8 ميغابايت."); inp.value = ""; return; }
+      toast("جارٍ قراءة الملف…");
+      readFileText(f).then(function (t) {
+        ta.value = t.trim(); ta.dispatchEvent(new Event("input")); toast("تمت القراءة: " + f.name);
+      }, function (e) {
+        var m = e && e.message;
+        toast(m === "type" ? "الصيغة غير مدعومة. المدعوم: PDF وDOCX وTXT وMD وCSV."
+          : m === "scan" ? "لا يوجد نص قابل للقراءة في الملف. ربما هو صور ممسوحة ضوئياً."
+          : "تعذّرت قراءة الملف.");
+      }).then(function () { inp.value = ""; });
+    });
+    wrap.appendChild(btn); wrap.appendChild(inp); ta.parentNode.insertBefore(wrap, ta);
+  }
+  ["lText", "dText", "qText"].forEach(addFileButton);
+
+  /* ---------- remote adapter (GitHub Pages etc.) ---------- */
+  function parseJsonLoose(t) {
+    t = (t || "").trim();
+    var m = t.match(/```[a-zA-Z]*\s*\n([\s\S]*?)```/); if (m) t = m[1].trim();
+    try { return JSON.parse(t); } catch (e) {}
+    var a = t.search(/[\[{]/), b = Math.max(t.lastIndexOf("]"), t.lastIndexOf("}"));
+    if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch (e2) {} }
+    return undefined;
+  }
+  function makeRemoteSample(endpoint) {
+    async function call(input, opts, asJson) {
+      opts = opts || {};
+      var msgs = typeof input === "string" ? [{ role: "user", content: input }] : input;
+      var res;
+      try {
+        res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: msgs, json: !!asJson }), signal: opts.signal });
+      } catch (e) {
+        if (e && e.name === "AbortError") throw { code: "cancelled", message: "cancelled" };
+        throw { code: "upstream_error", message: String(e) };
+      }
+      if (res.status === 429) throw { code: "rate_limited", message: "rate" };
+      if (!res.ok) throw { code: "upstream_error", message: "http " + res.status };
+      var data = await res.json(), text = String(data.text || "").trim();
+      if (!text) throw { code: "empty_completion", message: "empty" };
+      if (opts.onText) opts.onText({ text: text, delta: text });
+      return { text: text, truncated: !!data.truncated, modelTierApplied: "default" };
+    }
+    var s = function (input, opts) { return call(input, opts, false); };
+    s.json = async function (input, opts) {
+      var r = await call(input, opts, true), v = parseJsonLoose(r.text);
+      if (v === undefined) throw { code: "invalid_json", message: "invalid json", text: r.text };
+      return v;
+    };
+    return s;
+  }
+
   /* ---------- Claude access ---------- */
   var sample = null;
   var CLAUDE_READY = (window.claude && window.claude.use ? window.claude.use("sample") : Promise.resolve(null)).then(function (s) {
+    if (!s && API_ENDPOINT) s = makeRemoteSample(API_ENDPOINT);
     sample = s;
     if (!s) {
       ["vGo", "lGo", "cSend", "dGo", "qGo"].forEach(function (id) { $("#" + id).disabled = true; });
@@ -565,12 +705,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   $("#tabCode").addEventListener("click", function () { setVTab("code"); });
   $("#vCopy").addEventListener("click", function () { if (vCode) copyText(vCode); });
   $("#vSave").addEventListener("click", function () {
-    if (!vSvg) return;
-    window.claude.use("downloads").then(function (d) {
-      if (!d) { toast("الحفظ غير متاح هنا. استخدم نسخ الكود."); return; }
-      return d.save({ filename: "diagram.svg", data: vSvg }).then(function () { toast("تم الحفظ"); },
-        function (e) { if (e && e.code !== "declined") toast("تعذّر الحفظ"); });
-    });
+    if (vSvg) saveFile("diagram.svg", vSvg, "image/svg+xml");
   });
 
   function stripFences(t) {
@@ -740,15 +875,39 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   /* =========================================================
      CHAT
      ========================================================= */
-  var CHAT_RULES = "أنت مساعد ذكي داخل منصة المركز الإلكتروني للتعليم في جامعة الزاوية بليبيا. " +
+  var CHAT_RULES = "أنت مساعد ذكي داخل منصة مركز التعليم الإلكتروني بجامعة الزاوية في ليبيا. " +
     "أجب بلغة المستخدم، وبالعربية الفصحى الواضحة افتراضياً، بإيجاز ودقة. استخدم نصاً عادياً مع قوائم نقطية بسيطة عند الحاجة فقط، دون عناوين markdown أو جداول. " +
     "إن لم تكن متأكداً من معلومة فقل ذلك صراحة.";
   var cTurns = [], cCtl = null, cLast = "";
   var cMsgs = $("#cMsgs");
   function cAdd(role, text) {
-    var emp = cMsgs.querySelector(".empty"); if (emp) emp.remove();
+    if (!cMsgs.querySelector(".msg")) cMsgs.textContent = "";
     var d = document.createElement("div"); d.className = "msg " + (role === "user" ? "u" : "a"); d.textContent = text;
     cMsgs.appendChild(d); cMsgs.scrollTop = cMsgs.scrollHeight; return d;
+  }
+  var C_KEY = "zawia.chat.v1";
+  var C_SUG = ["اقترح خطة أسبوعية لمقرر في التعلم الإلكتروني", "اكتب رسالة رسمية للطلبة عن موعد الاختبارات", "اشرح الفرق بين التعلم المتزامن وغير المتزامن", "ساعدني في صياغة أهداف تعلم لمحاضرة"];
+  function cSave() { try { localStorage.setItem(C_KEY, JSON.stringify(cTurns.slice(-40))); } catch (e) {} }
+  function cShowEmpty() {
+    cMsgs.textContent = "";
+    var p = document.createElement("p"); p.className = "empty"; p.textContent = "ابدأ بسؤال، أو اختر اقتراحاً:"; cMsgs.appendChild(p);
+    var box = document.createElement("div"); box.className = "chips"; box.style.justifyContent = "center";
+    C_SUG.forEach(function (s) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "tab"; b.textContent = s;
+      b.addEventListener("click", function () { $("#cIn").value = s; $("#cIn").focus(); });
+      box.appendChild(b);
+    });
+    cMsgs.appendChild(box);
+  }
+  function cLoad() {
+    var a = [];
+    try { a = JSON.parse(localStorage.getItem(C_KEY) || "[]"); } catch (e) {}
+    a = Array.isArray(a) ? a.filter(function (t) { return t && (t.role === "user" || t.role === "assistant") && typeof t.content === "string" && t.content; }) : [];
+    while (a.length && a[0].role !== "user") a.shift();
+    if (!a.length) { cShowEmpty(); return; }
+    cTurns = a; cTurns.forEach(function (t) { cAdd(t.role, t.content); });
+    for (var i = cTurns.length - 1; i >= 0; i--) if (cTurns[i].role === "assistant") { cLast = cTurns[i].content; break; }
+    $("#cCopy").disabled = !cLast;
   }
   async function cSendMsg() {
     var inp = $("#cIn"), txt = inp.value.trim(), note = $("#cNote");
@@ -764,11 +923,14 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
       var r = await sample([{ role: "user", content: CHAT_RULES }].concat(ctx), { cache: false, signal: cCtl.signal,
         onText: function (u) { bubble.textContent = u.text; cMsgs.scrollTop = cMsgs.scrollHeight; } });
       bubble.textContent = r.text.trim(); cTurns.push({ role: "assistant", content: r.text.trim() });
-      cLast = r.text.trim(); $("#cCopy").disabled = false;
+      cLast = r.text.trim(); $("#cCopy").disabled = false; cSave();
       if (r.truncated) note.textContent = "قُطع الرد لطوله. اطلب المتابعة.";
     } catch (e) {
-      if (e && e.text) { bubble.textContent = e.text; cTurns.push({ role: "assistant", content: e.text }); }
-      else { if (bubble.previousSibling) bubble.previousSibling.remove(); bubble.remove(); cTurns.pop(); inp.value = txt; }
+      if (e && e.text) { bubble.textContent = e.text; cTurns.push({ role: "assistant", content: e.text }); cSave(); }
+      else {
+        if (bubble.previousSibling) bubble.previousSibling.remove(); bubble.remove(); cTurns.pop(); inp.value = txt;
+        if (!cMsgs.querySelector(".msg")) cShowEmpty();
+      }
       if (!e || e.code !== "cancelled") { note.className = "note err"; note.textContent = errCopy(e); }
     } finally {
       $("#cSend").hidden = false; $("#cStop").hidden = true; cCtl = null; cMsgs.scrollTop = cMsgs.scrollHeight;
@@ -782,8 +944,10 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   $("#cClear").addEventListener("click", function () {
     if (cCtl) cCtl.abort();
     cTurns = []; cLast = ""; $("#cCopy").disabled = true; $("#cNote").textContent = "";
-    cMsgs.innerHTML = '<p class="empty">اكتب سؤالك أو مهمتك، مثل: «ساعدني في كتابة خطة أسبوعية لمقرر التعلم الإلكتروني».</p>';
+    try { localStorage.removeItem(C_KEY); } catch (e) {}
+    cShowEmpty();
   });
+  cLoad();
   $("#cCopy").addEventListener("click", function () { if (cLast) copyText(cLast); });
 
   /* =========================================================
@@ -925,7 +1089,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
       list.appendChild(card);
     });
     out.appendChild(list); qScoreText();
-    $("#qReveal").disabled = false; $("#qCopy").disabled = false;
+    $("#qReveal").disabled = false; $("#qCopy").disabled = false; $("#qSave").disabled = false;
   }
   function qClean(arr) {
     if (!Array.isArray(arr)) return [];
@@ -939,14 +1103,15 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   $("#qReveal").addEventListener("click", function () {
     $$("#qOut .qcard").forEach(function (c, i) { qMark(c, i, -1); });
   });
-  $("#qCopy").addEventListener("click", function () {
+  function qAsText() {
     var L = ["أ", "ب", "ج", "د", "هـ", "و"];
-    var txt = qData.map(function (q, i) {
+    return qData.map(function (q, i) {
       return (i + 1) + ". " + q.q + "\n" + q.options.map(function (o, k) { return "   " + (L[k] || k + 1) + ") " + o; }).join("\n") +
         "\n   الإجابة: " + (L[q.answer] || q.answer + 1) + (q.explain ? "\n   الشرح: " + q.explain : "");
     }).join("\n\n");
-    copyText(txt);
-  });
+  }
+  $("#qCopy").addEventListener("click", function () { copyText(qAsText()); });
+  $("#qSave").addEventListener("click", function () { saveFile("quiz.txt", qAsText(), "text/plain;charset=utf-8"); });
   $("#qGo").addEventListener("click", async function () {
     var txt = $("#qText").value.trim().slice(0, Q_MAX), note = $("#qNote"), out = $("#qOut");
     note.className = "note";
@@ -959,7 +1124,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
       "Use ONLY facts stated in the content; do not invent facts. Write in the same language as the content (Arabic if Arabic). Spread questions across the whole content and vary the position of the correct answer. " +
       "Reply with ONLY a JSON array, no markdown fences, where each item is {\"q\": question text, \"options\": array of option strings, \"answer\": zero-based index of the correct option, \"explain\": one short sentence saying why it is correct}.\n\nContent:\n" + txt;
     qCtl = new AbortController(); $("#qGo").hidden = true; $("#qStop").hidden = false; note.textContent = "";
-    ["qReveal", "qCopy"].forEach(function (id) { $("#" + id).disabled = true; });
+    ["qReveal", "qCopy", "qSave"].forEach(function (id) { $("#" + id).disabled = true; });
     out.innerHTML = ""; var p = document.createElement("p"); p.className = "empty"; pending(p, "Claude يصوغ الأسئلة…"); out.appendChild(p);
     try {
       var arr = await sample.json(prompt, { signal: qCtl.signal, cache: false });
