@@ -1,0 +1,1144 @@
+<title>منصة الزاوية الذكية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Reem+Kufi:wght@500;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<style>
+/* Layout concept: RTL academic portal. A quiet green-ink masthead and a hero with a small agent-network figure, then three labelled tool sections; each tool opens as a two-pane workbench (input right, result left). */
+:root{
+  --bg:#F2F6F4;
+  --surface:#FFFFFF;
+  --ink:#10251E;
+  --muted:#586A62;
+  --line:#D3DDD8;
+  --brand:#0E5A49;
+  --brand-ink:#FFFFFF;
+  --tint:#E1EEE8;
+  --gold:#A8761F;
+  --danger:#A12B2B;
+  --paper:#FFFFFF;
+  --paper-ink:#14251F;
+  --f-display:"Reem Kufi","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;
+  --f-mono:ui-monospace,"SF Mono",Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1512;--surface:#12211C;--ink:#E5EFEA;--muted:#92A69D;--line:#24372F;
+    --brand:#3DB893;--brand-ink:#05211A;--tint:#173128;--gold:#D9A94B;--danger:#F08A8A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1512;--surface:#12211C;--ink:#E5EFEA;--muted:#92A69D;--line:#24372F;
+  --brand:#3DB893;--brand-ink:#05211A;--tint:#173128;--gold:#D9A94B;--danger:#F08A8A;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7}
+button,select,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1120px;margin-inline:auto;padding-inline:20px;padding-block:0 48px}
+svg.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* masthead */
+.mast{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:16px;border-bottom:1px solid var(--line)}
+.id{display:flex;align-items:center;gap:12px;min-width:0}
+.mark{width:42px;height:42px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-family:var(--f-display);font-size:26px;line-height:1;flex:none;padding-bottom:4px}
+.id b{display:block;font-family:var(--f-display);font-size:19px;font-weight:700;line-height:1.2}
+.id span{display:block;font-size:13px;color:var(--muted);line-height:1.3}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+.icon-btn:hover{border-color:var(--brand)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:32px;align-items:center;padding-block:56px 40px}
+.eyebrow{font-size:14px;color:var(--gold);font-weight:600;letter-spacing:.04em;margin:0 0 8px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(38px,6vw,62px);line-height:1.15;margin:0 0 14px;color:var(--brand);text-wrap:balance}
+.lead{font-size:18px;color:var(--muted);max-width:34em;margin:0 0 26px;text-wrap:pretty}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 20px;border:1px solid var(--line);background:var(--surface);font-weight:500}
+.btn:hover{border-color:var(--brand)}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);font-weight:600}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.net{width:100%;max-width:320px;justify-self:center;color:var(--brand)}
+.net .ln{stroke:var(--line);stroke-width:1.6;fill:none}
+.net .nd{fill:var(--surface);stroke:var(--brand);stroke-width:2}
+.net .nd.on{fill:var(--brand)}
+.net .gd{fill:var(--gold)}
+
+/* sections */
+.sec{padding-top:36px}
+.sec-h{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px;padding-bottom:12px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.sec-h h2{font-family:var(--f-display);font-size:28px;margin:0;font-weight:700}
+.sec-h p{margin:0;color:var(--muted);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.card{position:relative;display:flex;flex-direction:column;gap:10px;text-align:start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.card .ic{width:44px;height:44px;border-radius:12px;background:var(--tint);color:var(--brand);display:grid;place-items:center}
+.card .ic svg{width:22px;height:22px}
+.card h3{margin:0;font-size:17px;font-weight:600;line-height:1.4}
+.card p{margin:0;font-size:14px;color:var(--muted);line-height:1.6;text-wrap:pretty}
+.card .chip{position:absolute;top:16px;inset-inline-end:16px}
+.chip{font-size:12px;font-weight:600;padding:2px 10px;border-radius:99px;line-height:1.6}
+.chip.live{background:var(--tint);color:var(--brand)}
+.chip.soon{border:1px solid var(--line);color:var(--muted)}
+button.card{width:100%}
+button.card:hover{border-color:var(--brand);box-shadow:0 6px 18px -10px var(--brand)}
+button.card .go{margin-top:auto;display:flex;align-items:center;gap:6px;color:var(--brand);font-weight:600;font-size:14px;padding-top:6px}
+div.card{opacity:.82}
+
+footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+
+/* tool pages */
+.tool-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-block:22px 8px}
+.back{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 16px 6px 14px;font-size:14px}
+.back:hover{border-color:var(--brand)}
+.tool-title{font-family:var(--f-display);font-size:clamp(26px,4vw,36px);margin:0;font-weight:700;line-height:1.3}
+.tool-sub{margin:0 0 18px;color:var(--muted)}
+.bench{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;align-items:start}
+.pane{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;min-width:0}
+.lbl{display:block;font-size:14px;font-weight:600;margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.tab{border:1px solid var(--line);background:var(--bg);border-radius:99px;padding:5px 14px;font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.tab:hover{border-color:var(--brand)}
+.tab[aria-pressed="true"],.tab[aria-selected="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);font-weight:600}
+textarea,select{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:12px 14px;line-height:1.7}
+textarea{min-height:170px;resize:vertical}
+textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;border-color:var(--brand)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px}
+.row .grow{flex:1}
+.link-btn{border:0;background:none;color:var(--brand);padding:4px 0;font-size:14px;text-decoration:underline;text-underline-offset:3px}
+.stage-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.stage{background:var(--paper);color:var(--paper-ink);border:1px solid var(--line);border-radius:12px;min-height:320px;padding:16px;overflow:auto;display:grid;place-items:center}
+.stage[hidden]{display:none}
+.stage svg,.stage img{max-width:100%;height:auto}
+.stage .empty,.empty{color:var(--muted);text-align:center;max-width:26em;margin:auto;font-size:15px}
+.stage .empty{color:#5A6B64}
+.code{direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-word;font-family:var(--f-mono);font-size:13px;line-height:1.6;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;min-height:320px;margin:0;overflow:auto}
+.result{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;min-height:260px;line-height:1.9}
+.result.big{font-size:22px;line-height:2.2}
+.note{margin:12px 0 0;font-size:14px;color:var(--muted)}
+.note.err{color:var(--danger)}
+/* search */
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 14px;max-width:520px;margin-top:8px}
+.search:focus-within{border-color:var(--brand)}
+.search input{flex:1;border:0;background:none;padding:12px 0;outline:none;min-width:0}
+.search svg{color:var(--muted)}
+/* quiz */
+.opts{display:grid;gap:8px;margin-top:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:start;width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px;line-height:1.7}
+.opt:hover:not([disabled]){border-color:var(--brand)}
+.opt[disabled]{cursor:default}
+.opt.ok{border-color:var(--brand);background:var(--tint)}
+.opt.no{border-color:var(--danger)}
+.opt .mk{width:1.3em;flex:none;font-weight:700}
+.qcard{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.qcard h3{margin:0;font-size:16px;line-height:1.7}
+.qcard .ex{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.qlist{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.qscore{font-weight:600;color:var(--brand)}
+/* chat */
+.chat-pane{display:flex;flex-direction:column;gap:14px;max-width:820px;margin-inline:auto}
+.msgs{display:flex;flex-direction:column;gap:12px;min-height:320px;max-height:58vh;overflow-y:auto;padding:4px}
+.msg{max-width:88%;padding:10px 16px;border-radius:16px;white-space:pre-wrap;word-break:break-word;line-height:1.85}
+.msg.u{align-self:flex-start;background:var(--brand);color:var(--brand-ink);border-end-start-radius:4px}
+.msg.a{align-self:flex-end;background:var(--bg);border:1px solid var(--line);border-end-end-radius:4px}
+.chat-in{display:flex;gap:10px;align-items:flex-end}
+.chat-in textarea{min-height:56px;max-height:160px;flex:1}
+/* detector */
+.meter{height:12px;border-radius:99px;background:var(--tint);overflow:hidden;margin:8px 0 6px}
+.meter i{display:block;height:100%;width:0;background:var(--gold);border-radius:99px;transition:width .5s}
+.score{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.score b{font-family:var(--f-display);font-size:44px;line-height:1;font-variant-numeric:tabular-nums}
+.sigs{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.sigs li{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:15px}
+.sigs li b{display:block;font-size:14px}
+.hl{line-height:2;margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.hl span.ai{background:color-mix(in srgb,var(--gold) 28%,transparent);border-radius:4px}
+.hl span.hu{background:color-mix(in srgb,var(--brand) 18%,transparent);border-radius:4px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-inline-end:6px}
+.caveat{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:10px}
+.toast{position:fixed;inset-inline:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));margin-inline:auto;width:max-content;max-width:90vw;background:var(--ink);color:var(--bg);padding:8px 18px;border-radius:99px;font-size:14px;z-index:9}
+.spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--brand);display:inline-block;animation:sp .8s linear infinite;vertical-align:-2px;margin-inline-end:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;padding-block:36px 24px}
+  .net{max-width:220px;justify-self:start}
+  .bench{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17l.7 1.8 1.8.7-1.8.7L19 22l-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+    <symbol id="i-lang" viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c.5 3.5 3 6 6.5 7.5M12 5c-.5 3.5-3 6-7 8"/><path d="M13 21l4-10 4 10M14.5 17.5h5"/></symbol>
+    <symbol id="i-flow" viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M9 6h4a2 2 0 0 1 2 2v7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.2-4.2"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></symbol>
+    <symbol id="i-workflow" viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="12" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M8.5 6H12a3 3 0 0 1 3 3v.5M8.5 18H12a3 3 0 0 0 3-3v-.5"/></symbol>
+    <symbol id="i-network" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.5 6.5a4 4 0 0 0-5 5l-6 6a1.8 1.8 0 0 0 2.5 2.5l6-6a4 4 0 0 0 5-5l-2.5 2.5-2.5-.5-.5-2.5z"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></symbol>
+    <symbol id="i-mega" viewBox="0 0 24 24"><path d="M4 10v4h3l7 4V6L7 10z"/><path d="M17.5 9a4 4 0 0 1 0 6"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9H4z"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-go" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+    <symbol id="i-quiz" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24"><path d="M4 20c3 0 5-1.5 5-4 0-1.5-1-2.5-2.5-2.5S4 14.5 4 16.5V20zM9 13.5L19 4l1 1-9.5 10"/></symbol>
+  </defs>
+</svg>
+
+<div dir="rtl" lang="ar" class="wrap">
+  <header class="mast">
+    <div class="id">
+      <div class="mark" aria-hidden="true">ز</div>
+      <div><b>جامعة الزاوية</b><span>مركز التعليم الإلكتروني</span></div>
+    </div>
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="تبديل المظهر الفاتح والداكن"><svg class="i"><use href="#i-moon"/></svg></button>
+  </header>
+
+  <!-- HOME -->
+  <main id="view-home">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">جامعة الزاوية · ليبيا</p>
+        <h1>منصة الزاوية الذكية</h1>
+        <p class="lead">وكلاء الذكاء الاصطناعي بين يديك. أدوات للرسم والتحليل اللغوي والبحث، صُمّمت للتعليم والعمل الأكاديمي باللغة العربية.</p>
+        <div class="actions">
+          <button class="btn primary" type="button" id="startBtn"><svg class="i"><use href="#i-spark"/></svg>ابدأ الآن</button>
+          <button class="btn" type="button" data-open="visualize"><svg class="i"><use href="#i-flow"/></svg>مولّد المخططات</button>
+        </div>
+      </div>
+      <svg class="net" viewBox="0 0 320 260" role="img" aria-label="رسم يوضح وكلاء متصلين ببعضهم">
+        <path class="ln" d="M160 130L70 50M160 130L255 60M160 130L60 195M160 130L260 190M70 50L255 60M60 195L260 190"/>
+        <circle class="nd" cx="70" cy="50" r="18"/><circle class="nd" cx="255" cy="60" r="18"/>
+        <circle class="nd" cx="60" cy="195" r="18"/><circle class="nd" cx="260" cy="190" r="18"/>
+        <circle class="nd on" cx="160" cy="130" r="30"/>
+        <circle class="gd" cx="160" cy="130" r="7"/>
+        <circle class="gd" cx="70" cy="50" r="5"/><circle class="gd" cx="260" cy="190" r="5"/>
+      </svg>
+    </section>
+    <div class="search">
+      <label class="lbl" for="hSearch" style="position:absolute;left:-9999px">ابحث عن أداة</label>
+      <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="hSearch" type="search" placeholder="ابحث عن أداة أو قسم…" autocomplete="off">
+    </div>
+    <p class="empty" id="hNone" hidden style="margin-top:28px">لا توجد أداة بهذا الاسم.</p>
+    <div id="sections"></div>
+  </main>
+
+  <!-- VISUALIZE -->
+  <main id="view-visualize" hidden>
+    <div class="tool-top">
+      <button class="back" type="button" data-open="home"><svg class="i"><use href="#i-home"/></svg>الرئيسية</button>
+      <h1 class="tool-title" style="color:var(--ink)">المخططات · Visualize</h1>
+    </div>
+    <p class="tool-sub">صف أي فكرة أو نظام أو عملية، ويحوّلها Claude إلى مخطط Mermaid أو رسم SVG جاهز.</p>
+    <div class="bench">
+      <section class="pane" aria-label="الإدخال">
+        <span class="lbl" id="vTypeLbl">نوع المخطط</span>
+        <div class="chips" id="vTypes" role="group" aria-labelledby="vTypeLbl"></div>
+        <label class="lbl" for="vDesc">الوصف</label>
+        <textarea id="vDesc" placeholder="مثال: ارسم مسار تسجيل الطالب في مقرر إلكتروني من التقديم حتى بدء الدراسة، مع حالات الرفض."></textarea>
+        <div class="row">
+          <button class="btn primary" type="button" id="vGo"><svg class="i"><use href="#i-brush"/></svg>ارسم</button>
+          <button class="btn" type="button" id="vStop" hidden><svg class="i"><use href="#i-stop"/></svg>إيقاف</button>
+          <span class="grow"></span>
+          <button class="link-btn" type="button" id="vEx">جرّب مثالاً</button>
+        </div>
+        <p class="note" id="vNote" aria-live="polite"></p>
+      </section>
+      <section class="pane" aria-label="النتيجة">
+        <div class="stage-bar">
+          <div class="chips" style="margin:0" role="tablist">
+            <button class="tab" role="tab" type="button" id="tabDiag" aria-selected="true">المخطط</button>
+            <button class="tab" role="tab" type="button" id="tabCode" aria-selected="false">الكود</button>
+          </div>
+          <div class="chips" style="margin:0">
+            <button class="tab" type="button" id="vCopy" disabled><svg class="i"><use href="#i-copy"/></svg>نسخ الكود</button>
+            <button class="tab" type="button" id="vSave" disabled><svg class="i"><use href="#i-down"/></svg>حفظ SVG</button>
+          </div>
+        </div>
+        <div class="stage" id="vStage" dir="ltr"><p class="empty" dir="rtl">سيظهر المخطط هنا بعد أن تكتب الوصف وتضغط «ارسم».</p></div>
+        <pre class="code" id="vCode" hidden></pre>
+      </section>
+    </div>
+  </main>
+
+  <!-- LINGUISTICS -->
+  <main id="view-linguistics" hidden>
+    <div class="tool-top">
+      <button class="back" type="button" data-open="home"><svg class="i"><use href="#i-home"/></svg>الرئيسية</button>
+      <h1 class="tool-title" style="color:var(--ink)">محلّل اللغة</h1>
+    </div>
+    <p class="tool-sub">كشف اللغة، المرادفات، التحليل الصرفي، التشكيل العربي، والترجمة السريعة.</p>
+    <div class="bench">
+      <section class="pane" aria-label="الإدخال">
+        <span class="lbl" id="lModeLbl">العملية</span>
+        <div class="chips" id="lModes" role="group" aria-labelledby="lModeLbl"></div>
+        <div id="lTargetWrap" hidden>
+          <label class="lbl" for="lTarget">الترجمة إلى</label>
+          <select id="lTarget" style="margin-bottom:16px">
+            <option>العربية</option><option>الإنجليزية</option><option>الفرنسية</option><option>الإيطالية</option><option>التركية</option><option>الإسبانية</option>
+          </select>
+        </div>
+        <label class="lbl" for="lText">النص</label>
+        <textarea id="lText" placeholder="ألصق النص هنا…"></textarea>
+        <div class="row">
+          <button class="btn primary" type="button" id="lGo"><svg class="i"><use href="#i-spark"/></svg>نفّذ</button>
+          <button class="btn" type="button" id="lStop" hidden><svg class="i"><use href="#i-stop"/></svg>إيقاف</button>
+          <span class="grow"></span>
+          <button class="link-btn" type="button" id="lEx">جرّب مثالاً</button>
+        </div>
+        <p class="note" id="lNote" aria-live="polite"></p>
+      </section>
+      <section class="pane" aria-label="النتيجة">
+        <div class="stage-bar">
+          <span class="lbl" style="margin:0" id="lResLbl">النتيجة</span>
+          <button class="tab" type="button" id="lCopy" disabled><svg class="i"><use href="#i-copy"/></svg>نسخ</button>
+        </div>
+        <div class="result" id="lOut" aria-live="polite"><span class="empty">اختر العملية، ألصق النص، ثم اضغط «نفّذ».</span></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- CHAT -->
+  <main id="view-chat" hidden>
+    <div class="tool-top">
+      <button class="back" type="button" data-open="home"><svg class="i"><use href="#i-home"/></svg>الرئيسية</button>
+      <h1 class="tool-title" style="color:var(--ink)">المحادثات</h1>
+    </div>
+    <p class="tool-sub">محادثة مع Claude باللغة العربية. تُحفظ المحادثة في متصفحك فقط على هذا الجهاز، ويمكنك مسحها بزر «محادثة جديدة».</p>
+    <section class="pane chat-pane" aria-label="المحادثة">
+      <div class="msgs" id="cMsgs" aria-live="polite"><p class="empty">اكتب سؤالك أو مهمتك، مثل: «ساعدني في كتابة خطة أسبوعية لمقرر التعلم الإلكتروني».</p></div>
+      <div class="chat-in">
+        <label class="lbl" for="cIn" style="position:absolute;left:-9999px">رسالتك</label>
+        <textarea id="cIn" rows="2" placeholder="اكتب رسالتك… (Enter للإرسال، Shift+Enter لسطر جديد)"></textarea>
+        <button class="btn primary" type="button" id="cSend"><svg class="i"><use href="#i-go"/></svg>إرسال</button>
+        <button class="btn" type="button" id="cStop" hidden><svg class="i"><use href="#i-stop"/></svg>إيقاف</button>
+      </div>
+      <div class="row" style="margin-top:0">
+        <button class="link-btn" type="button" id="cClear">محادثة جديدة</button>
+        <button class="link-btn" type="button" id="cCopy" disabled>نسخ آخر رد</button>
+        <span class="note" id="cNote" style="margin:0" aria-live="polite"></span>
+      </div>
+    </section>
+  </main>
+
+  <!-- QUIZ -->
+  <main id="view-quiz" hidden>
+    <div class="tool-top">
+      <button class="back" type="button" data-open="home"><svg class="i"><use href="#i-home"/></svg>الرئيسية</button>
+      <h1 class="tool-title" style="color:var(--ink)">مولّد الاختبارات</h1>
+    </div>
+    <p class="tool-sub">ألصق محتوى محاضرة أو فصل، ويصيغ Claude أسئلة جاهزة للتدريب أو للتقييم، مع الإجابة الصحيحة والشرح.</p>
+    <div class="bench">
+      <section class="pane" aria-label="الإدخال">
+        <label class="lbl" for="qText">المحتوى</label>
+        <textarea id="qText" style="min-height:220px" placeholder="ألصق هنا نص المحاضرة أو الملخص (حتى نحو 6000 حرف)…"></textarea>
+        <div class="row" style="align-items:flex-end">
+          <div class="grow"><label class="lbl" for="qCount">عدد الأسئلة</label>
+            <select id="qCount"><option>5</option><option selected>8</option><option>12</option><option>15</option></select></div>
+          <div class="grow"><label class="lbl" for="qType">النوع</label>
+            <select id="qType"><option value="mixed">مختلط</option><option value="mcq">اختيار من متعدد</option><option value="tf">صح / خطأ</option></select></div>
+          <div class="grow"><label class="lbl" for="qLevel">المستوى</label>
+            <select id="qLevel"><option value="easy">سهل</option><option value="medium" selected>متوسط</option><option value="hard">صعب</option></select></div>
+        </div>
+        <div class="row">
+          <button class="btn primary" type="button" id="qGo"><svg class="i"><use href="#i-quiz"/></svg>أنشئ الأسئلة</button>
+          <button class="btn" type="button" id="qStop" hidden><svg class="i"><use href="#i-stop"/></svg>إيقاف</button>
+          <span class="grow"></span>
+          <button class="link-btn" type="button" id="qEx">جرّب مثالاً</button>
+        </div>
+        <p class="note" id="qNote" aria-live="polite"></p>
+      </section>
+      <section class="pane" aria-label="الأسئلة">
+        <div class="stage-bar">
+          <span class="lbl qscore" style="margin:0" id="qScore">الأسئلة</span>
+          <div class="chips" style="margin:0">
+            <button class="tab" type="button" id="qReveal" disabled>إظهار كل الإجابات</button>
+            <button class="tab" type="button" id="qCopy" disabled><svg class="i"><use href="#i-copy"/></svg>نسخ مع الإجابات</button>
+            <button class="tab" type="button" id="qSave" disabled><svg class="i"><use href="#i-down"/></svg>حفظ TXT</button>
+          </div>
+        </div>
+        <div id="qOut" aria-live="polite"><p class="empty">ستظهر الأسئلة هنا. اضغط على أي خيار لترى هل إجابتك صحيحة.</p></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- DETECTOR -->
+  <main id="view-detector" hidden>
+    <div class="tool-top">
+      <button class="back" type="button" data-open="home"><svg class="i"><use href="#i-home"/></svg>الرئيسية</button>
+      <h1 class="tool-title" style="color:var(--ink)">كشف الكتابة بالذكاء الاصطناعي</h1>
+    </div>
+    <p class="tool-sub">الصق نصاً، ويقدّر Claude احتمال كتابته آلياً مع الإشارات التي بنى عليها التقدير.</p>
+    <div class="bench">
+      <section class="pane" aria-label="الإدخال">
+        <label class="lbl" for="dText">النص المراد فحصه</label>
+        <textarea id="dText" style="min-height:260px" placeholder="ألصق هنا فقرة أو أكثر (يُفضّل 100 كلمة فأكثر، والحد الأقصى نحو 4000 حرف)…"></textarea>
+        <div class="row">
+          <button class="btn primary" type="button" id="dGo"><svg class="i"><use href="#i-scan"/></svg>افحص النص</button>
+          <button class="btn" type="button" id="dStop" hidden><svg class="i"><use href="#i-stop"/></svg>إيقاف</button>
+          <span class="grow"></span>
+          <span class="note" id="dCount" style="margin:0">0 حرف</span>
+        </div>
+        <p class="note" id="dNote" aria-live="polite"></p>
+      </section>
+      <section class="pane" aria-label="النتيجة">
+        <div id="dOut" aria-live="polite"><p class="empty">ستظهر النتيجة هنا بعد الفحص.</p></div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <span><b>فكرة وتصميم: د. حسن الشيباني</b> · جامعة الزاوية · ليبيا</span>
+    <span>مركز التعليم الإلكتروني بجامعة الزاوية · 2026</span>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+
+<script>
+(function () {
+  "use strict";
+  /* عند الاستضافة خارج Claude (مثل GitHub Pages) ضع هنا رابط الوسيط، مثل: https://zawia-ai.example.workers.dev
+     اتركه فارغاً داخل Claude. راجع worker/README.md. */
+  var API_ENDPOINT = "https://zawia-ai-proxy.shebanihassan29.workers.dev";
+  var MAMMOTH_SRC = "https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js";
+  var PDFJS_SRC = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  var PDFJS_WORKER = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  var PDF_MAX_PAGES = 60;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function ico(n) { return '<svg class="i" aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
+
+  /* ---------- toast ---------- */
+  var toastT;
+  function toast(msg) {
+    var t = $("#toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 2200);
+  }
+  function copyText(txt) {
+    var done = function () { toast("تم النسخ"); };
+    var fallback = function () {
+      var ta = document.createElement("textarea"); ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { toast("تعذّر النسخ، حدّد النص وانسخه يدوياً"); }
+      ta.remove();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, fallback);
+    else fallback();
+  }
+
+  /* ---------- theme ---------- */
+  $("#themeBtn").addEventListener("click", function () {
+    var root = document.documentElement;
+    var cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    var next = cur === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("zawia.theme", next); } catch (e) {}
+  });
+  try { var savedTheme = localStorage.getItem("zawia.theme"); if (savedTheme === "dark" || savedTheme === "light") document.documentElement.setAttribute("data-theme", savedTheme); } catch (e) {}
+
+  /* ---------- home content ---------- */
+  var SECTIONS = [
+    { h: "التعليم الإلكتروني", d: "أدوات لأعضاء هيئة التدريس والمتدربين", items: [
+      { t: "مولّد الاختبارات", d: "ألصق محتوى محاضرة واحصل على أسئلة اختيار من متعدد وصح/خطأ مع الإجابات والشرح.", i: "quiz", open: "quiz" }
+    ]},
+    { h: "الوسائط", d: "إنشاء وتحليل المحتوى المرئي والنصي", items: [
+      { t: "المحادثات", d: "محادثة ذكية مع Claude باللغة العربية.", i: "chat", open: "chat" },
+      { t: "بطاقات مشاركة", d: "تصميم صور جاهزة للنشر على شبكات التواصل.", i: "spark" },
+      { t: "محلّل اللغة", d: "كشف اللغة، مرادفات، تشكيل عربي، تحليل صرفي وترجمة.", i: "lang", open: "linguistics" },
+      { t: "المخططات · Visualize", d: "حوّل أي فكرة إلى مخطط Mermaid أو رسم SVG فوراً.", i: "flow", open: "visualize" }
+    ]},
+    { h: "الوكلاء", d: "ذكاء اصطناعي ينفّذ المهام نيابة عنك", items: [
+      { t: "منصة البحث بالذكاء", d: "بحث معمّق في الإنترنت مع تلخيص المصادر.", i: "search" },
+      { t: "منصة البرمجة", d: "مراجعة الكود وإصلاحه وشرحه واختباره.", i: "code" },
+      { t: "منصة وكلاء البحث والتطوير", d: "وكلاء يعملون معاً على مهام طويلة.", i: "globe" },
+      { t: "منصة بناء وتطوير التطبيقات", d: "بناء تطبيقات الويب والجوال بمعاينة حيّة.", i: "phone" },
+      { t: "وكيل كشف الكتابة بالذكاء الاصطناعي", d: "الصق نصاً واحصل على تقدير احتمالي لكتابته آلياً مع الإشارات.", i: "scan", open: "detector" },
+      { t: "نظام بناء الوكلاء", d: "ابنِ وكيلك الخاص أو نظاماً من عدة وكلاء.", i: "network" },
+      { t: "سير عمل مرئي", d: "حرّر سير عمل بالسحب والإفلات.", i: "workflow" }
+    ]},
+    { h: "الأدوات", d: "إدارة وتتبّع وتخصيص تجربتك", items: [
+      { t: "منصة الأدوات المساعدة", d: "كتالوج أدوات وإضافات ومهام مجدولة.", i: "wrench" },
+      { t: "السجلات والإعدادات", d: "سجل الأنشطة والحافظة والأرشيف.", i: "gear" },
+      { t: "الشكاوى والبلاغات", d: "أرسل شكوى أو بلاغاً عن عطل وتابع الرد.", i: "mega" }
+    ]}
+  ];
+  var host = $("#sections");
+  SECTIONS.forEach(function (s, si) {
+    var sec = document.createElement("section"); sec.className = "sec"; sec.id = "sec" + si;
+    var head = '<div class="sec-h"><h2>' + s.h + '</h2><p>' + s.d + '</p></div>';
+    var grid = document.createElement("div"); grid.className = "grid";
+    s.items.forEach(function (it) {
+      var live = !!it.open;
+      var el = document.createElement(live ? "button" : "div");
+      el.className = "card";
+      if (live) { el.type = "button"; el.setAttribute("data-open", it.open); }
+      el.innerHTML = '<span class="chip ' + (live ? "live" : "soon") + '">' + (live ? "متاح" : "قريباً") + '</span>' +
+        '<div class="ic">' + ico(it.i) + '</div><h3>' + it.t + '</h3><p>' + it.d + '</p>' +
+        (live ? '<span class="go">افتح الأداة ' + ico("go") + '</span>' : "");
+      grid.appendChild(el);
+    });
+    sec.innerHTML = head; sec.appendChild(grid); host.appendChild(sec);
+  });
+
+  /* ---------- navigation ---------- */
+  var VIEWS = ["home", "visualize", "linguistics", "chat", "detector", "quiz"];
+  function show(v) {
+    if (VIEWS.indexOf(v) < 0) v = "home";
+    VIEWS.forEach(function (n) { $("#view-" + n).hidden = n !== v; });
+    try { history.replaceState(null, "", v === "home" ? location.pathname + location.search : "#" + v); } catch (e) {}
+    window.scrollTo(0, 0);
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-open]");
+    if (b) show(b.getAttribute("data-open"));
+  });
+  $("#startBtn").addEventListener("click", function () { $("#sec0").scrollIntoView({ behavior: "smooth" }); });
+  window.addEventListener("hashchange", function () { show((location.hash || "").replace("#", "")); });
+
+  /* ---------- helpers: save, load script, files ---------- */
+  function saveFile(name, data, mime) {
+    var ready = (window.claude && window.claude.use) ? window.claude.use("downloads") : Promise.resolve(null);
+    return ready.then(function (d) {
+      if (d) return d.save({ filename: name, data: data }).then(function () { toast("تم الحفظ"); },
+        function (e) { if (e && e.code !== "declined") toast("تعذّر الحفظ"); });
+      try {
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([data], { type: mime || "text/plain" })); a.download = name;
+        document.body.appendChild(a); a.click(); a.remove(); toast("تم الحفظ");
+      } catch (e) { toast("تعذّر الحفظ. استخدم زر النسخ."); }
+    });
+  }
+  function loadScript(src) {
+    return new Promise(function (res, rej) {
+      var s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = function () { rej(new Error("load")); };
+      document.head.appendChild(s);
+    });
+  }
+  async function extractPdfText(lib, buf, maxPages) {
+    var pdf = await lib.getDocument({ data: buf }).promise;
+    var n = Math.min(pdf.numPages, maxPages), out = [];
+    for (var p = 1; p <= n; p++) {
+      var page = await pdf.getPage(p), tc = await page.getTextContent(), line = "", parts = [];
+      tc.items.forEach(function (it) {
+        line += it.str;
+        if (it.hasEOL) { parts.push(line); line = ""; } else if (it.str) { line += " "; }
+      });
+      if (line.trim()) parts.push(line);
+      out.push(parts.join("\n").replace(/[ \t]+/g, " ").trim());
+    }
+    return { text: out.join("\n\n").trim(), pages: pdf.numPages, read: n };
+  }
+  function loadPdfLib() {
+    if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+    return loadScript(PDFJS_SRC).then(function () {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
+      return window.pdfjsLib;
+    });
+  }
+  function readFileText(f) {
+    var ext = (f.name.split(".").pop() || "").toLowerCase();
+    if (ext === "pdf") {
+      return loadPdfLib().then(function (lib) {
+        return f.arrayBuffer().then(function (b) { return extractPdfText(lib, b, PDF_MAX_PAGES); });
+      }).then(function (r) {
+        if (r.text.replace(/\s/g, "").length < 40) throw new Error("scan");
+        if (r.read < r.pages) toast("قُرئت أول " + r.read + " صفحة من " + r.pages + ".");
+        return r.text;
+      });
+    }
+    if (["txt", "md", "csv", "html", "htm", "json"].indexOf(ext) >= 0) {
+      return new Promise(function (res, rej) {
+        var r = new FileReader(); r.onload = function () { res(String(r.result)); }; r.onerror = function () { rej(new Error("read")); }; r.readAsText(f);
+      });
+    }
+    if (ext === "docx") {
+      return (window.mammoth ? Promise.resolve() : loadScript(MAMMOTH_SRC))
+        .then(function () { return f.arrayBuffer(); })
+        .then(function (b) { return window.mammoth.extractRawText({ arrayBuffer: b }); })
+        .then(function (r) { return r.value; });
+    }
+    return Promise.reject(new Error("type"));
+  }
+  function addFileButton(taId) {
+    var ta = $("#" + taId); if (!ta) return;
+    var wrap = document.createElement("div"); wrap.className = "chips"; wrap.style.marginBottom = "8px";
+    var btn = document.createElement("button"); btn.type = "button"; btn.className = "tab"; btn.innerHTML = ico("down") + "رفع ملف (PDF / DOCX / TXT / MD / CSV)";
+    var inp = document.createElement("input"); inp.type = "file"; inp.accept = ".pdf,.txt,.md,.csv,.html,.json,.docx"; inp.hidden = true;
+    btn.addEventListener("click", function () { inp.click(); });
+    inp.addEventListener("change", function () {
+      var f = inp.files && inp.files[0]; if (!f) return;
+      if (f.size > 8 * 1024 * 1024) { toast("الملف كبير. الحد الأقصى 8 ميغابايت."); inp.value = ""; return; }
+      toast("جارٍ قراءة الملف…");
+      readFileText(f).then(function (t) {
+        ta.value = t.trim(); ta.dispatchEvent(new Event("input")); toast("تمت القراءة: " + f.name);
+      }, function (e) {
+        var m = e && e.message;
+        toast(m === "type" ? "الصيغة غير مدعومة. المدعوم: PDF وDOCX وTXT وMD وCSV."
+          : m === "scan" ? "لا يوجد نص قابل للقراءة في الملف. ربما هو صور ممسوحة ضوئياً."
+          : "تعذّرت قراءة الملف.");
+      }).then(function () { inp.value = ""; });
+    });
+    wrap.appendChild(btn); wrap.appendChild(inp); ta.parentNode.insertBefore(wrap, ta);
+  }
+  ["lText", "dText", "qText"].forEach(addFileButton);
+
+  /* ---------- remote adapter (GitHub Pages etc.) ---------- */
+  function parseJsonLoose(t) {
+    t = (t || "").trim();
+    var m = t.match(/```[a-zA-Z]*\s*\n([\s\S]*?)```/); if (m) t = m[1].trim();
+    try { return JSON.parse(t); } catch (e) {}
+    var a = t.search(/[\[{]/), b = Math.max(t.lastIndexOf("]"), t.lastIndexOf("}"));
+    if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch (e2) {} }
+    return undefined;
+  }
+  function makeRemoteSample(endpoint) {
+    async function call(input, opts, asJson) {
+      opts = opts || {};
+      var msgs = typeof input === "string" ? [{ role: "user", content: input }] : input;
+      var res;
+      try {
+        res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: msgs, json: !!asJson }), signal: opts.signal });
+      } catch (e) {
+        if (e && e.name === "AbortError") throw { code: "cancelled", message: "cancelled" };
+        throw { code: "upstream_error", message: String(e) };
+      }
+      if (res.status === 429) throw { code: "rate_limited", message: "rate" };
+      if (!res.ok) throw { code: "upstream_error", message: "http " + res.status };
+      var data = await res.json(), text = String(data.text || "").trim();
+      if (!text) throw { code: "empty_completion", message: "empty" };
+      if (opts.onText) opts.onText({ text: text, delta: text });
+      return { text: text, truncated: !!data.truncated, modelTierApplied: "default" };
+    }
+    var s = function (input, opts) { return call(input, opts, false); };
+    s.json = async function (input, opts) {
+      var r = await call(input, opts, true), v = parseJsonLoose(r.text);
+      if (v === undefined) throw { code: "invalid_json", message: "invalid json", text: r.text };
+      return v;
+    };
+    return s;
+  }
+
+  /* ---------- Claude access ---------- */
+  var sample = null;
+  var CLAUDE_READY = (window.claude && window.claude.use ? window.claude.use("sample") : Promise.resolve(null)).then(function (s) {
+    if (!s && API_ENDPOINT) s = makeRemoteSample(API_ENDPOINT);
+    sample = s;
+    if (!s) {
+      ["vGo", "lGo", "cSend", "dGo", "qGo"].forEach(function (id) { $("#" + id).disabled = true; });
+      var m = "التشغيل الذكي غير متاح في هذا العرض. افتح الصفحة من حسابك على Claude.";
+      $("#qNote").textContent = m; $("#vNote").textContent = m; $("#lNote").textContent = m; $("#cNote").textContent = m; $("#dNote").textContent = m;
+    }
+  });
+  function errCopy(e) {
+    switch (e && e.code) {
+      case "not_granted": return "لم تسمح للصفحة باستخدام Claude. أعد المحاولة ووافق عند ظهور الطلب.";
+      case "rate_limited": return "تجاوزت حد الاستخدام الحالي. انتظر قليلاً ثم أعد المحاولة.";
+      case "session_expired": return "انتهت الجلسة. سجّل الدخول مرة أخرى.";
+      case "sampling_disabled": return "ميزة Claude غير متاحة لهذا الحساب.";
+      case "refused": return "تعذّر تنفيذ هذا الطلب. عدّل الوصف وأعد المحاولة.";
+      case "prompt_too_large": return "النص طويل جداً. اختصره وأعد المحاولة.";
+      default: return "حدث خطأ أثناء الاتصال. أعد المحاولة.";
+    }
+  }
+  function pending(el, msg) { el.innerHTML = '<span class="spin"></span>' + msg; }
+
+  /* =========================================================
+     VISUALIZE
+     ========================================================= */
+  var VTYPES = [
+    { id: "flow", label: "مخطط تدفق", kind: "mermaid", syn: "a Mermaid flowchart (start with `flowchart TD`)",
+      ex: "ارسم مسار تسجيل الطالب في مقرر إلكتروني: تقديم الطلب، مراجعة الشروط، قبول أو رفض، دفع الرسوم، فتح المقرر، مع حالة الرفض وإعادة التقديم." },
+    { id: "sequence", label: "تسلسلي", kind: "mermaid", syn: "a Mermaid sequenceDiagram",
+      ex: "الطالب يرسل واجباً عبر المنصة، المنصة تحفظ الملف، تُشعر المدرّس، المدرّس يصحّح ويرسل الدرجة، المنصة تُشعر الطالب." },
+    { id: "state", label: "حالات", kind: "mermaid", syn: "a Mermaid stateDiagram-v2",
+      ex: "حالات طلب إجازة دراسية: مسودة، مُرسل، قيد المراجعة، موافق عليه، مرفوض، ملغى." },
+    { id: "er", label: "علاقات (ER)", kind: "mermaid", syn: "a Mermaid erDiagram",
+      ex: "نظام جامعي فيه: طالب، مقرر، تسجيل، مدرّس، قسم. الطالب يسجّل في عدة مقررات والمقرر يدرّسه مدرّس واحد وينتمي لقسم." },
+    { id: "class", label: "فئات", kind: "mermaid", syn: "a Mermaid classDiagram",
+      ex: "فئات منصة تعليمية: مستخدم، طالب، مدرّس، مقرر، اختبار، مع الوراثة والعلاقات المناسبة." },
+    { id: "mind", label: "خريطة ذهنية", kind: "mermaid", syn: "a Mermaid mindmap",
+      ex: "خريطة ذهنية للتحول الرقمي في التعليم العالي: البنية التحتية، المحتوى الإلكتروني، التدريب، الذكاء الاصطناعي، التقييم." },
+    { id: "gantt", label: "Gantt", kind: "mermaid", syn: "a Mermaid gantt chart with dateFormat YYYY-MM-DD",
+      ex: "خطة إطلاق مساق إلكتروني في 12 أسبوعاً: إعداد المحتوى، التصوير، المراجعة، الرفع على المنصة، تجربة تجريبية، الإطلاق." },
+    { id: "svg", label: "SVG حر", kind: "svg", syn: "a standalone SVG illustration or infographic",
+      ex: "رسم توضيحي بسيط لدورة المياه: الشمس، البحر، التبخر، السحب، المطر، النهر، مع تسميات عربية." }
+  ];
+  var vType = VTYPES[0], vCtl = null, vCode = "", vSvg = "", vTab = "diag", vSeq = 0;
+
+  var vTypesEl = $("#vTypes");
+  VTYPES.forEach(function (t) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "tab"; b.textContent = t.label;
+    b.setAttribute("aria-pressed", t === vType ? "true" : "false"); b.dataset.id = t.id;
+    b.addEventListener("click", function () {
+      vType = t; $$("button", vTypesEl).forEach(function (x) { x.setAttribute("aria-pressed", x.dataset.id === t.id ? "true" : "false"); });
+    });
+    vTypesEl.appendChild(b);
+  });
+  $("#vEx").addEventListener("click", function () { $("#vDesc").value = vType.ex; $("#vDesc").focus(); });
+
+  function setVTab(t) {
+    vTab = t;
+    $("#tabDiag").setAttribute("aria-selected", t === "diag");
+    $("#tabCode").setAttribute("aria-selected", t === "code");
+    $("#vStage").hidden = t !== "diag";
+    $("#vCode").hidden = t !== "code";
+  }
+  $("#tabDiag").addEventListener("click", function () { setVTab("diag"); });
+  $("#tabCode").addEventListener("click", function () { setVTab("code"); });
+  $("#vCopy").addEventListener("click", function () { if (vCode) copyText(vCode); });
+  $("#vSave").addEventListener("click", function () {
+    if (vSvg) saveFile("diagram.svg", vSvg, "image/svg+xml");
+  });
+
+  function stripFences(t) {
+    t = (t || "").trim();
+    var m = t.match(/```[a-zA-Z]*\s*\n([\s\S]*?)```/);
+    if (m) return m[1].trim();
+    return t.replace(/^```[a-zA-Z]*\s*/, "").replace(/```\s*$/, "").trim();
+  }
+  function vPrompt(t, desc) {
+    if (t.kind === "svg") {
+      return "Create " + t.syn + " from the description below.\n" +
+        "Rules: output ONLY the raw SVG markup starting with <svg and ending with </svg>, no code fences, no explanation. " +
+        "Use viewBox=\"0 0 800 520\" (adjust height if needed) and xmlns. Give every shape explicit fill and stroke colors that look good on a white background. " +
+        "No scripts, no external images, no external fonts; text uses font-family=\"Tahoma, Arial, sans-serif\". " +
+        "Write all labels in the same language as the description (Arabic labels must use text-anchor=\"middle\" and fit inside shapes). Keep the layout clean with no overlapping text.\n\nDescription:\n" + desc;
+    }
+    return "Create " + t.syn + " from the description below.\n" +
+      "Rules: output ONLY the Mermaid code, no code fences, no explanation, no title line outside the diagram syntax. " +
+      "Write node and label text in the same language as the description (Arabic is fine). " +
+      "Wrap every label that contains spaces, Arabic text or punctuation in double quotes. Do not use parentheses, brackets or quotes inside label text. " +
+      "Keep it valid Mermaid v10 syntax and reasonably compact (at most about 25 nodes).\n\nDescription:\n" + desc;
+  }
+  function vFixPrompt(t, code, err) {
+    return "This " + t.syn + " failed to render in Mermaid v10 with this error:\n" + err + "\n\nCode:\n" + code +
+      "\n\nReturn ONLY the corrected Mermaid code, no code fences, no explanation. Keep the same content; quote all labels with double quotes and avoid special characters inside them.";
+  }
+
+  function mermaidInit() {
+    mermaid.initialize({
+      startOnLoad: false, securityLevel: "strict", suppressErrorRendering: true,
+      theme: "base", fontFamily: "'IBM Plex Sans Arabic', Tahoma, sans-serif",
+      themeVariables: {
+        background: "#FFFFFF", primaryColor: "#E1EEE8", primaryBorderColor: "#0E5A49", primaryTextColor: "#14251F",
+        secondaryColor: "#F3E9D2", tertiaryColor: "#F2F6F4", lineColor: "#4A5E56", textColor: "#14251F",
+        noteBkgColor: "#F3E9D2", noteTextColor: "#14251F"
+      }
+    });
+  }
+  function svgFromMarkup(code) {
+    var m = code.match(/<svg[\s\S]*<\/svg>/i);
+    if (!m) throw new Error("no svg");
+    var s = m[0];
+    if (!/xmlns=/.test(s.slice(0, 300))) s = s.replace(/<svg/i, '<svg xmlns="http://www.w3.org/2000/svg"');
+    return s;
+  }
+  function showStage(node) { var st = $("#vStage"); st.textContent = ""; st.appendChild(node); }
+  function stageMsg(msg, isHtml) {
+    var p = document.createElement("p"); p.className = "empty"; p.setAttribute("dir", "rtl");
+    if (isHtml) p.innerHTML = msg; else p.textContent = msg;
+    showStage(p);
+  }
+  async function renderViz(t, code) {
+    if (t.kind === "svg") {
+      var svg = svgFromMarkup(code);
+      var img = new Image();
+      img.alt = "المخطط الناتج";
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+      showStage(img);
+      return svg;
+    }
+    if (!window.mermaid) throw new Error("mermaid unavailable");
+    mermaidInit();
+    await mermaid.parse(code);
+    var out = await mermaid.render("mmd" + (++vSeq), code);
+    var wrap = document.createElement("div"); wrap.innerHTML = out.svg;
+    showStage(wrap);
+    return out.svg;
+  }
+
+  $("#vGo").addEventListener("click", async function () {
+    var desc = $("#vDesc").value.trim();
+    var note = $("#vNote"); note.className = "note";
+    if (!desc) { note.textContent = "اكتب وصفاً للمخطط أولاً."; return; }
+    await CLAUDE_READY; if (!sample) return;
+    var t = vType; vCtl = new AbortController();
+    $("#vGo").hidden = true; $("#vStop").hidden = false;
+    ["vCopy", "vSave"].forEach(function (id) { $("#" + id).disabled = true; });
+    vCode = ""; vSvg = ""; $("#vCode").textContent = "";
+    stageMsg('<span class="spin"></span>Claude يرسم المخطط…', true); note.textContent = "";
+    try {
+      var r = await sample(vPrompt(t, desc), { signal: vCtl.signal, cache: false,
+        onText: function (u) { $("#vCode").textContent = stripFences(u.text); } });
+      var code = stripFences(r.text), svg;
+      try { svg = await renderViz(t, code); }
+      catch (e1) {
+        if (t.kind === "svg" || vCtl.signal.aborted) throw e1;
+        note.textContent = "جارٍ تصحيح صياغة المخطط…";
+        var r2 = await sample(vFixPrompt(t, code, String(e1 && (e1.str || e1.message || e1))), { signal: vCtl.signal, cache: false });
+        code = stripFences(r2.text);
+        svg = await renderViz(t, code);
+        note.textContent = "";
+      }
+      vCode = code; vSvg = svg; $("#vCode").textContent = code;
+      $("#vCopy").disabled = false; $("#vSave").disabled = false;
+      note.textContent = r.truncated ? "قُطع الرد لطوله. جرّب وصفاً أقصر." : "";
+      setVTab("diag");
+    } catch (e) {
+      if (e && e.code === "cancelled") { stageMsg("تم الإيقاف."); }
+      else if (e && e.code) { stageMsg("تعذّر إنشاء المخطط."); note.className = "note err"; note.textContent = errCopy(e); }
+      else {
+        stageMsg("تعذّر رسم المخطط من الكود الناتج. افتح تبويب «الكود» أو أعد المحاولة بوصف أوضح.");
+        vCode = $("#vCode").textContent; $("#vCopy").disabled = !vCode;
+        note.className = "note err"; note.textContent = "الكود الناتج غير صالح للرسم.";
+      }
+    } finally {
+      $("#vGo").hidden = false; $("#vStop").hidden = true; vCtl = null;
+    }
+  });
+  $("#vStop").addEventListener("click", function () { if (vCtl) vCtl.abort(); });
+
+  /* =========================================================
+     LINGUISTICS
+     ========================================================= */
+  var LMODES = [
+    { id: "detect", label: "كشف اللغة", big: false,
+      ex: "Le savoir est une lumière qui éclaire le chemin. العلم نور.",
+      p: function (x) { return "Identify the language(s) of the text below. Reply in Arabic as plain text with no markdown: first line the language name (if mixed, list each with the part it covers), then the writing script, then a confidence level (عالية/متوسطة/منخفضة), then one short line of notes (dialect or register if relevant).\n\nText:\n" + x; } },
+    { id: "syn", label: "مرادفات", big: false,
+      ex: "جميل",
+      p: function (x) { return "For the word or short phrase below, give up to 8 synonyms in the same language, and up to 3 antonyms if they exist. Reply in Arabic as plain text with no markdown, in two lines labelled «المرادفات:» and «الأضداد:», each item separated by «، ». If the input is ambiguous, group synonyms by meaning on separate lines.\n\nInput:\n" + x; } },
+    { id: "morph", label: "تحليل صرفي", big: false,
+      ex: "استخرجوها",
+      p: function (x) { return "Do a morphological analysis of each word in the text below. Reply in Arabic as plain text with no markdown, one block per word separated by a blank line, with these lines: الكلمة، الجذر، الوزن، نوع الكلمة، وللفعل: الزمن والضمير والبناء، وللاسم: النوع والعدد والإعراب المحتمل، ثم الأجزاء المتصلة (سوابق ولواحق) إن وُجدت. If the text is not Arabic, analyze it in its own language and still reply in Arabic.\n\nText:\n" + x; } },
+    { id: "tashkeel", label: "تشكيل عربي", big: true,
+      ex: "العلم يرفع بيوتا لا عماد لها والجهل يهدم بيت العز والكرم",
+      p: function (x) { return "Add complete and correct Arabic diacritics (tashkeel) to the text below, including case endings (إعراب) where grammar requires them. Output ONLY the diacritized text with the original wording, punctuation and line breaks unchanged, nothing else.\n\nText:\n" + x; } },
+    { id: "translate", label: "ترجمة سريعة", big: false, target: true,
+      ex: "تهدف المنصة إلى دعم أعضاء هيئة التدريس في إنتاج محتوى تعليمي رقمي عالي الجودة.",
+      p: function (x, tg) { return "Translate the text below into " + tg + ". Output ONLY the translation, preserving paragraphs and tone, no notes.\n\nText:\n" + x; } }
+  ];
+  var lMode = LMODES[0], lCtl = null;
+  var lModesEl = $("#lModes");
+  LMODES.forEach(function (m) {
+    var b = document.createElement("button"); b.type = "button"; b.className = "tab"; b.textContent = m.label; b.dataset.id = m.id;
+    b.setAttribute("aria-pressed", m === lMode ? "true" : "false");
+    b.addEventListener("click", function () {
+      lMode = m;
+      $$("button", lModesEl).forEach(function (x) { x.setAttribute("aria-pressed", x.dataset.id === m.id ? "true" : "false"); });
+      $("#lTargetWrap").hidden = !m.target;
+    });
+    lModesEl.appendChild(b);
+  });
+  $("#lEx").addEventListener("click", function () { $("#lText").value = lMode.ex; $("#lText").focus(); });
+  $("#lCopy").addEventListener("click", function () { var t = $("#lOut").textContent; if (t) copyText(t); });
+  $("#lStop").addEventListener("click", function () { if (lCtl) lCtl.abort(); });
+  $("#lGo").addEventListener("click", async function () {
+    var txt = $("#lText").value.trim(), note = $("#lNote"), out = $("#lOut");
+    note.className = "note";
+    if (!txt) { note.textContent = "ألصق نصاً أولاً."; return; }
+    await CLAUDE_READY; if (!sample) return;
+    var m = lMode; lCtl = new AbortController();
+    $("#lGo").hidden = true; $("#lStop").hidden = false; $("#lCopy").disabled = true; note.textContent = "";
+    out.classList.toggle("big", m.big); pending(out, "Claude يعمل على النص…");
+    try {
+      var r = await sample(m.p(txt, $("#lTarget").value), { signal: lCtl.signal, cache: false,
+        onText: function (u) { out.textContent = u.text; } });
+      out.textContent = r.text.trim(); $("#lCopy").disabled = false;
+      if (r.truncated) note.textContent = "قُطع الرد لطوله. جرّب نصاً أقصر.";
+    } catch (e) {
+      if (e && e.code === "cancelled") { out.textContent = e.text || ""; $("#lCopy").disabled = !e.text; if (!e.text) out.innerHTML = '<span class="empty">تم الإيقاف.</span>'; }
+      else { out.textContent = e && e.text ? e.text : ""; if (!out.textContent) out.innerHTML = '<span class="empty">تعذّر تنفيذ العملية.</span>'; note.className = "note err"; note.textContent = errCopy(e); }
+    } finally {
+      $("#lGo").hidden = false; $("#lStop").hidden = true; lCtl = null;
+    }
+  });
+
+  /* =========================================================
+     CHAT
+     ========================================================= */
+  var CHAT_RULES = "أنت مساعد ذكي داخل منصة مركز التعليم الإلكتروني بجامعة الزاوية في ليبيا. " +
+    "أجب بلغة المستخدم، وبالعربية الفصحى الواضحة افتراضياً، بإيجاز ودقة. استخدم نصاً عادياً مع قوائم نقطية بسيطة عند الحاجة فقط، دون عناوين markdown أو جداول. " +
+    "إن لم تكن متأكداً من معلومة فقل ذلك صراحة.";
+  var cTurns = [], cCtl = null, cLast = "";
+  var cMsgs = $("#cMsgs");
+  function cAdd(role, text) {
+    if (!cMsgs.querySelector(".msg")) cMsgs.textContent = "";
+    var d = document.createElement("div"); d.className = "msg " + (role === "user" ? "u" : "a"); d.textContent = text;
+    cMsgs.appendChild(d); cMsgs.scrollTop = cMsgs.scrollHeight; return d;
+  }
+  var C_KEY = "zawia.chat.v1";
+  var C_SUG = ["اقترح خطة أسبوعية لمقرر في التعلم الإلكتروني", "اكتب رسالة رسمية للطلبة عن موعد الاختبارات", "اشرح الفرق بين التعلم المتزامن وغير المتزامن", "ساعدني في صياغة أهداف تعلم لمحاضرة"];
+  function cSave() { try { localStorage.setItem(C_KEY, JSON.stringify(cTurns.slice(-40))); } catch (e) {} }
+  function cShowEmpty() {
+    cMsgs.textContent = "";
+    var p = document.createElement("p"); p.className = "empty"; p.textContent = "ابدأ بسؤال، أو اختر اقتراحاً:"; cMsgs.appendChild(p);
+    var box = document.createElement("div"); box.className = "chips"; box.style.justifyContent = "center";
+    C_SUG.forEach(function (s) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "tab"; b.textContent = s;
+      b.addEventListener("click", function () { $("#cIn").value = s; $("#cIn").focus(); });
+      box.appendChild(b);
+    });
+    cMsgs.appendChild(box);
+  }
+  function cLoad() {
+    var a = [];
+    try { a = JSON.parse(localStorage.getItem(C_KEY) || "[]"); } catch (e) {}
+    a = Array.isArray(a) ? a.filter(function (t) { return t && (t.role === "user" || t.role === "assistant") && typeof t.content === "string" && t.content; }) : [];
+    while (a.length && a[0].role !== "user") a.shift();
+    if (!a.length) { cShowEmpty(); return; }
+    cTurns = a; cTurns.forEach(function (t) { cAdd(t.role, t.content); });
+    for (var i = cTurns.length - 1; i >= 0; i--) if (cTurns[i].role === "assistant") { cLast = cTurns[i].content; break; }
+    $("#cCopy").disabled = !cLast;
+  }
+  async function cSendMsg() {
+    var inp = $("#cIn"), txt = inp.value.trim(), note = $("#cNote");
+    if (!txt) return;
+    await CLAUDE_READY; if (!sample) return;
+    note.className = "note"; note.textContent = "";
+    inp.value = ""; cTurns.push({ role: "user", content: txt }); cAdd("user", txt);
+    var bubble = cAdd("a", ""); pending(bubble, "جارٍ التفكير…");
+    cCtl = new AbortController(); $("#cSend").hidden = true; $("#cStop").hidden = false;
+    var ctx = cTurns.slice(-20);
+    if (ctx[0].role !== "user") ctx = ctx.slice(1);
+    try {
+      var r = await sample([{ role: "user", content: CHAT_RULES }].concat(ctx), { cache: false, signal: cCtl.signal,
+        onText: function (u) { bubble.textContent = u.text; cMsgs.scrollTop = cMsgs.scrollHeight; } });
+      bubble.textContent = r.text.trim(); cTurns.push({ role: "assistant", content: r.text.trim() });
+      cLast = r.text.trim(); $("#cCopy").disabled = false; cSave();
+      if (r.truncated) note.textContent = "قُطع الرد لطوله. اطلب المتابعة.";
+    } catch (e) {
+      if (e && e.text) { bubble.textContent = e.text; cTurns.push({ role: "assistant", content: e.text }); cSave(); }
+      else {
+        if (bubble.previousSibling) bubble.previousSibling.remove(); bubble.remove(); cTurns.pop(); inp.value = txt;
+        if (!cMsgs.querySelector(".msg")) cShowEmpty();
+      }
+      if (!e || e.code !== "cancelled") { note.className = "note err"; note.textContent = errCopy(e); }
+    } finally {
+      $("#cSend").hidden = false; $("#cStop").hidden = true; cCtl = null; cMsgs.scrollTop = cMsgs.scrollHeight;
+    }
+  }
+  $("#cSend").addEventListener("click", cSendMsg);
+  $("#cStop").addEventListener("click", function () { if (cCtl) cCtl.abort(); });
+  $("#cIn").addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); if (!$("#cSend").hidden && !$("#cSend").disabled) cSendMsg(); }
+  });
+  $("#cClear").addEventListener("click", function () {
+    if (cCtl) cCtl.abort();
+    cTurns = []; cLast = ""; $("#cCopy").disabled = true; $("#cNote").textContent = "";
+    try { localStorage.removeItem(C_KEY); } catch (e) {}
+    cShowEmpty();
+  });
+  cLoad();
+  $("#cCopy").addEventListener("click", function () { if (cLast) copyText(cLast); });
+
+  /* =========================================================
+     AI-WRITING DETECTOR
+     ========================================================= */
+  var dCtl = null, D_MAX = 4000;
+  $("#dText").addEventListener("input", function () {
+    var n = this.value.length;
+    $("#dCount").textContent = n + " حرف" + (n > D_MAX ? " (سيُقتطع إلى " + D_MAX + ")" : "");
+  });
+  function dPrompt(txt) {
+    return "You are assisting a university instructor who wants a cautious, probabilistic estimate of whether the text below was written by an AI model. " +
+      "Judge only from style: uniform rhythm, generic phrasing, hedging patterns, over-neat structure, lack of concrete detail or personal voice, versus natural variation, specifics, idiosyncrasy and errors. " +
+      "Be calibrated: short or formulaic texts (definitions, formal letters) are hard to judge, so keep the score near the middle and say so.\n" +
+      "Reply with ONLY one JSON object, no markdown fences, with exactly these fields:\n" +
+      '{"score": integer 0-100 (probability the text is AI-written),\n' +
+      ' "verdict": one of "human" | "mixed" | "ai" | "unclear",\n' +
+      ' "confidence": one of "low" | "medium" | "high",\n' +
+      ' "signals": array of 3 to 5 objects {"label": short Arabic label, "detail": one Arabic sentence citing a concrete feature of this text, "points": "ai" | "human"},\n' +
+      ' "sentences": the text split into consecutive sentences, copied verbatim and in order, each as {"t": sentence, "f": "ai" | "human" | "neutral"} (f = whether that sentence reads as machine-like, human-like, or no signal)}\n' +
+      "All Arabic fields in the output must be Arabic. If the text is not Arabic, still write labels and details in Arabic.\n\nText:\n" + txt;
+  }
+  function dRender(d) {
+    var out = $("#dOut"); out.textContent = "";
+    var score = Math.max(0, Math.min(100, Math.round(Number(d.score) || 0)));
+    var vmap = { human: "يميل إلى الكتابة البشرية", mixed: "مختلط أو غير حاسم", ai: "يميل إلى الكتابة الآلية", unclear: "غير واضح" };
+    var cmap = { low: "منخفضة", medium: "متوسطة", high: "عالية" };
+    var h = document.createElement("div");
+    var top = document.createElement("div"); top.className = "score";
+    var b = document.createElement("b"); b.textContent = score + "%";
+    var sp = document.createElement("span"); sp.textContent = "احتمال الكتابة الآلية";
+    top.appendChild(b); top.appendChild(sp);
+    var chip = document.createElement("span"); chip.className = "chip live";
+    chip.textContent = (vmap[d.verdict] || vmap.unclear) + " · الثقة " + (cmap[d.confidence] || "منخفضة");
+    top.appendChild(chip); h.appendChild(top);
+    var m = document.createElement("div"); m.className = "meter"; m.setAttribute("role", "img"); m.setAttribute("aria-label", "مقياس الاحتمال " + score + " من 100");
+    var fill = document.createElement("i"); m.appendChild(fill); h.appendChild(m);
+    requestAnimationFrame(function () { fill.style.width = score + "%"; });
+    if (Array.isArray(d.signals) && d.signals.length) {
+      var ul = document.createElement("ul"); ul.className = "sigs";
+      d.signals.slice(0, 6).forEach(function (s) {
+        var li = document.createElement("li"), t = document.createElement("b");
+        t.textContent = String(s.label || "") + (s.points === "ai" ? " (يشير إلى آلي)" : s.points === "human" ? " (يشير إلى بشري)" : "");
+        li.appendChild(t); li.appendChild(document.createTextNode(String(s.detail || ""))); ul.appendChild(li);
+      });
+      h.appendChild(ul);
+    }
+    if (Array.isArray(d.sentences) && d.sentences.length) {
+      var hl = document.createElement("div"); hl.className = "hl";
+      d.sentences.forEach(function (s) {
+        var sp2 = document.createElement("span"); if (s.f === "ai") sp2.className = "ai"; else if (s.f === "human") sp2.className = "hu";
+        sp2.textContent = String(s.t || "") + " "; hl.appendChild(sp2);
+      });
+      h.appendChild(hl);
+      var lg = document.createElement("div"); lg.className = "legend";
+      lg.innerHTML = '<span><i style="background:color-mix(in srgb,var(--gold) 45%,transparent)"></i>جملة تبدو آلية</span><span><i style="background:color-mix(in srgb,var(--brand) 35%,transparent)"></i>جملة تبدو بشرية</span>';
+      h.appendChild(lg);
+    }
+    var cv = document.createElement("p"); cv.className = "caveat";
+    cv.textContent = "هذا تقدير احتمالي مبني على الأسلوب فقط، وقد يخطئ في الاتجاهين. لا تعتمد عليه وحده في قرار أكاديمي، وراجع النص مع صاحبه.";
+    h.appendChild(cv); out.appendChild(h);
+  }
+  $("#dGo").addEventListener("click", async function () {
+    var txt = $("#dText").value.trim().slice(0, D_MAX), note = $("#dNote"), out = $("#dOut");
+    note.className = "note";
+    if (txt.length < 120) { note.textContent = "النص قصير. ألصق فقرة لا تقل عن نحو 120 حرفاً ليكون التقدير مفيداً."; return; }
+    await CLAUDE_READY; if (!sample) return;
+    dCtl = new AbortController(); $("#dGo").hidden = true; $("#dStop").hidden = false; note.textContent = "";
+    out.innerHTML = ""; var p = document.createElement("p"); p.className = "empty"; pending(p, "Claude يحلّل أسلوب النص…"); out.appendChild(p);
+    try {
+      var d = await sample.json(dPrompt(txt), { signal: dCtl.signal, cache: false });
+      if (!d || typeof d !== "object") throw { code: "invalid_json" };
+      dRender(d);
+    } catch (e) {
+      out.innerHTML = '<p class="empty">' + (e && e.code === "cancelled" ? "تم الإيقاف." : "تعذّر إنهاء الفحص.") + "</p>";
+      if (!e || e.code !== "cancelled") { note.className = "note err"; note.textContent = e && e.code === "invalid_json" ? "لم يرجع التحليل بصيغة صالحة. أعد المحاولة أو جرّب نصاً أقصر." : errCopy(e); }
+    } finally {
+      $("#dGo").hidden = false; $("#dStop").hidden = true; dCtl = null;
+    }
+  });
+  $("#dStop").addEventListener("click", function () { if (dCtl) dCtl.abort(); });
+
+  /* =========================================================
+     HOME SEARCH
+     ========================================================= */
+  $("#hSearch").addEventListener("input", function () {
+    var q = this.value.trim().toLowerCase(), any = false;
+    $$("#sections .sec").forEach(function (sec) {
+      var shown = 0;
+      $$(".card", sec).forEach(function (c) {
+        var ok = !q || c.textContent.toLowerCase().indexOf(q) >= 0;
+        c.hidden = !ok; if (ok) shown++;
+      });
+      sec.hidden = !shown; if (shown) any = true;
+    });
+    $("#hNone").hidden = any;
+  });
+
+  /* =========================================================
+     QUIZ GENERATOR
+     ========================================================= */
+  var qCtl = null, qData = [], qAnswered = 0, qRight = 0, Q_MAX = 6000;
+  var Q_EX = "التعلم الإلكتروني هو استخدام التقنيات الرقمية لتقديم المحتوى التعليمي وإدارة العملية التعليمية. يشمل التعلم المتزامن الذي يجمع المتعلمين والمعلم في وقت واحد عبر الاجتماعات المرئية، والتعلم غير المتزامن الذي يتيح للمتعلم الدراسة في الوقت المناسب له عبر المحتوى المسجّل والمنتديات. وتُستخدم أنظمة إدارة التعلم مثل Moodle لتنظيم المقررات والواجبات والاختبارات وتتبّع تقدم الطلبة. ومن مزايا التعلم الإلكتروني المرونة في الزمان والمكان وإمكانية إعادة مشاهدة المحاضرات، ومن تحدياته ضعف الاتصال بالإنترنت وانخفاض التفاعل إن لم يُصمَّم المحتوى جيداً.";
+  $("#qEx").addEventListener("click", function () { $("#qText").value = Q_EX; $("#qText").focus(); });
+  $("#qStop").addEventListener("click", function () { if (qCtl) qCtl.abort(); });
+
+  function qScoreText() {
+    $("#qScore").textContent = qData.length ? "أجبت عن " + qAnswered + " من " + qData.length + (qAnswered ? " · الصحيح " + qRight : "") : "الأسئلة";
+  }
+  function qMark(card, qi, chosen) {
+    var q = qData[qi], opts = $$(".opt", card);
+    if (card.dataset.done) return;
+    card.dataset.done = "1";
+    opts.forEach(function (b, i) {
+      b.disabled = true;
+      if (i === q.answer) { b.classList.add("ok"); b.querySelector(".mk").textContent = "✓"; }
+      else if (i === chosen) { b.classList.add("no"); b.querySelector(".mk").textContent = "✗"; }
+    });
+    var ex = card.querySelector(".ex"); if (ex) ex.hidden = false;
+    if (chosen >= 0) { qAnswered++; if (chosen === q.answer) qRight++; qScoreText(); }
+  }
+  function qRender() {
+    var out = $("#qOut"); out.textContent = ""; qAnswered = 0; qRight = 0;
+    var list = document.createElement("div"); list.className = "qlist";
+    qData.forEach(function (q, qi) {
+      var card = document.createElement("div"); card.className = "qcard";
+      var h = document.createElement("h3"); h.textContent = (qi + 1) + ". " + q.q; card.appendChild(h);
+      var box = document.createElement("div"); box.className = "opts";
+      q.options.forEach(function (o, i) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "opt";
+        var mk = document.createElement("span"); mk.className = "mk"; mk.textContent = "○";
+        var tx = document.createElement("span"); tx.textContent = o;
+        b.appendChild(mk); b.appendChild(tx);
+        b.addEventListener("click", function () { qMark(card, qi, i); });
+        box.appendChild(b);
+      });
+      card.appendChild(box);
+      if (q.explain) { var ex = document.createElement("p"); ex.className = "ex"; ex.hidden = true; ex.textContent = "الشرح: " + q.explain; card.appendChild(ex); }
+      list.appendChild(card);
+    });
+    out.appendChild(list); qScoreText();
+    $("#qReveal").disabled = false; $("#qCopy").disabled = false; $("#qSave").disabled = false;
+  }
+  function qClean(arr) {
+    if (!Array.isArray(arr)) return [];
+    return arr.map(function (x) {
+      if (!x || typeof x.q !== "string" || !Array.isArray(x.options) || x.options.length < 2) return null;
+      var a = Number(x.answer);
+      if (!(a >= 0 && a < x.options.length)) return null;
+      return { q: x.q, options: x.options.map(String), answer: a, explain: x.explain ? String(x.explain) : "" };
+    }).filter(Boolean);
+  }
+  $("#qReveal").addEventListener("click", function () {
+    $$("#qOut .qcard").forEach(function (c, i) { qMark(c, i, -1); });
+  });
+  function qAsText() {
+    var L = ["أ", "ب", "ج", "د", "هـ", "و"];
+    return qData.map(function (q, i) {
+      return (i + 1) + ". " + q.q + "\n" + q.options.map(function (o, k) { return "   " + (L[k] || k + 1) + ") " + o; }).join("\n") +
+        "\n   الإجابة: " + (L[q.answer] || q.answer + 1) + (q.explain ? "\n   الشرح: " + q.explain : "");
+    }).join("\n\n");
+  }
+  $("#qCopy").addEventListener("click", function () { copyText(qAsText()); });
+  $("#qSave").addEventListener("click", function () { saveFile("quiz.txt", qAsText(), "text/plain;charset=utf-8"); });
+  $("#qGo").addEventListener("click", async function () {
+    var txt = $("#qText").value.trim().slice(0, Q_MAX), note = $("#qNote"), out = $("#qOut");
+    note.className = "note";
+    if (txt.length < 150) { note.textContent = "المحتوى قصير. ألصق فقرة لا تقل عن نحو 150 حرفاً."; return; }
+    await CLAUDE_READY; if (!sample) return;
+    var n = $("#qCount").value, type = $("#qType").value, lv = $("#qLevel").value;
+    var tmap = { mixed: "a mix of multiple-choice (4 options) and true/false questions", mcq: "only multiple-choice questions with exactly 4 options", tf: "only true/false questions with options [\"صح\",\"خطأ\"]" };
+    var lmap = { easy: "easy recall", medium: "medium difficulty requiring understanding", hard: "hard questions requiring application and analysis" };
+    var prompt = "Write " + n + " exam questions from the content below: " + tmap[type] + ", level: " + lmap[lv] + ". " +
+      "Use ONLY facts stated in the content; do not invent facts. Write in the same language as the content (Arabic if Arabic). Spread questions across the whole content and vary the position of the correct answer. " +
+      "Reply with ONLY a JSON array, no markdown fences, where each item is {\"q\": question text, \"options\": array of option strings, \"answer\": zero-based index of the correct option, \"explain\": one short sentence saying why it is correct}.\n\nContent:\n" + txt;
+    qCtl = new AbortController(); $("#qGo").hidden = true; $("#qStop").hidden = false; note.textContent = "";
+    ["qReveal", "qCopy", "qSave"].forEach(function (id) { $("#" + id).disabled = true; });
+    out.innerHTML = ""; var p = document.createElement("p"); p.className = "empty"; pending(p, "Claude يصوغ الأسئلة…"); out.appendChild(p);
+    try {
+      var arr = await sample.json(prompt, { signal: qCtl.signal, cache: false });
+      qData = qClean(arr);
+      if (!qData.length) throw { code: "invalid_json" };
+      qRender();
+    } catch (e) {
+      out.innerHTML = '<p class="empty">' + (e && e.code === "cancelled" ? "تم الإيقاف." : "تعذّر إنشاء الأسئلة.") + "</p>";
+      if (!e || e.code !== "cancelled") { note.className = "note err"; note.textContent = e && e.code === "invalid_json" ? "لم يرجع الناتج بصيغة صالحة. أعد المحاولة أو قلّل عدد الأسئلة." : errCopy(e); }
+    } finally {
+      $("#qGo").hidden = false; $("#qStop").hidden = true; qCtl = null;
+    }
+  });
+
+  show((location.hash || "").replace("#", ""));
+})();
+</script>
