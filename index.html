@@ -120,6 +120,24 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
 .result.big{font-size:22px;line-height:2.2}
 .note{margin:12px 0 0;font-size:14px;color:var(--muted)}
 .note.err{color:var(--danger)}
+/* search */
+.search{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 14px;max-width:520px;margin-top:8px}
+.search:focus-within{border-color:var(--brand)}
+.search input{flex:1;border:0;background:none;padding:12px 0;outline:none;min-width:0}
+.search svg{color:var(--muted)}
+/* quiz */
+.opts{display:grid;gap:8px;margin-top:10px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:start;width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px;line-height:1.7}
+.opt:hover:not([disabled]){border-color:var(--brand)}
+.opt[disabled]{cursor:default}
+.opt.ok{border-color:var(--brand);background:var(--tint)}
+.opt.no{border-color:var(--danger)}
+.opt .mk{width:1.3em;flex:none;font-weight:700}
+.qcard{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.qcard h3{margin:0;font-size:16px;line-height:1.7}
+.qcard .ex{margin:10px 0 0;font-size:14px;color:var(--muted)}
+.qlist{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.qscore{font-weight:600;color:var(--brand)}
 /* chat */
 .chat-pane{display:flex;flex-direction:column;gap:14px;max-width:820px;margin-inline:auto}
 .msgs{display:flex;flex-direction:column;gap:12px;min-height:320px;max-height:58vh;overflow-y:auto;padding:4px}
@@ -176,6 +194,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
     <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></symbol>
     <symbol id="i-go" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
     <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+    <symbol id="i-quiz" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></symbol>
     <symbol id="i-brush" viewBox="0 0 24 24"><path d="M4 20c3 0 5-1.5 5-4 0-1.5-1-2.5-2.5-2.5S4 14.5 4 16.5V20zM9 13.5L19 4l1 1-9.5 10"/></symbol>
   </defs>
 </svg>
@@ -210,6 +229,12 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
         <circle class="gd" cx="70" cy="50" r="5"/><circle class="gd" cx="260" cy="190" r="5"/>
       </svg>
     </section>
+    <div class="search">
+      <label class="lbl" for="hSearch" style="position:absolute;left:-9999px">ابحث عن أداة</label>
+      <svg class="i" aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="hSearch" type="search" placeholder="ابحث عن أداة أو قسم…" autocomplete="off">
+    </div>
+    <p class="empty" id="hNone" hidden style="margin-top:28px">لا توجد أداة بهذا الاسم.</p>
     <div id="sections"></div>
     <footer><span>جامعة الزاوية · ليبيا</span><span>المركز الإلكتروني للتعليم · 2026</span></footer>
   </main>
@@ -312,6 +337,46 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
     </section>
   </main>
 
+  <!-- QUIZ -->
+  <main id="view-quiz" hidden>
+    <div class="tool-top">
+      <button class="back" type="button" data-open="home"><svg class="i"><use href="#i-home"/></svg>الرئيسية</button>
+      <h1 class="tool-title" style="color:var(--ink)">مولّد الاختبارات</h1>
+    </div>
+    <p class="tool-sub">ألصق محتوى محاضرة أو فصل، ويصيغ Claude أسئلة جاهزة للتدريب أو للتقييم، مع الإجابة الصحيحة والشرح.</p>
+    <div class="bench">
+      <section class="pane" aria-label="الإدخال">
+        <label class="lbl" for="qText">المحتوى</label>
+        <textarea id="qText" style="min-height:220px" placeholder="ألصق هنا نص المحاضرة أو الملخص (حتى نحو 6000 حرف)…"></textarea>
+        <div class="row" style="align-items:flex-end">
+          <div class="grow"><label class="lbl" for="qCount">عدد الأسئلة</label>
+            <select id="qCount"><option>5</option><option selected>8</option><option>12</option><option>15</option></select></div>
+          <div class="grow"><label class="lbl" for="qType">النوع</label>
+            <select id="qType"><option value="mixed">مختلط</option><option value="mcq">اختيار من متعدد</option><option value="tf">صح / خطأ</option></select></div>
+          <div class="grow"><label class="lbl" for="qLevel">المستوى</label>
+            <select id="qLevel"><option value="easy">سهل</option><option value="medium" selected>متوسط</option><option value="hard">صعب</option></select></div>
+        </div>
+        <div class="row">
+          <button class="btn primary" type="button" id="qGo"><svg class="i"><use href="#i-quiz"/></svg>أنشئ الأسئلة</button>
+          <button class="btn" type="button" id="qStop" hidden><svg class="i"><use href="#i-stop"/></svg>إيقاف</button>
+          <span class="grow"></span>
+          <button class="link-btn" type="button" id="qEx">جرّب مثالاً</button>
+        </div>
+        <p class="note" id="qNote" aria-live="polite"></p>
+      </section>
+      <section class="pane" aria-label="الأسئلة">
+        <div class="stage-bar">
+          <span class="lbl qscore" style="margin:0" id="qScore">الأسئلة</span>
+          <div class="chips" style="margin:0">
+            <button class="tab" type="button" id="qReveal" disabled>إظهار كل الإجابات</button>
+            <button class="tab" type="button" id="qCopy" disabled><svg class="i"><use href="#i-copy"/></svg>نسخ مع الإجابات</button>
+          </div>
+        </div>
+        <div id="qOut" aria-live="polite"><p class="empty">ستظهر الأسئلة هنا. اضغط على أي خيار لترى هل إجابتك صحيحة.</p></div>
+      </section>
+    </div>
+  </main>
+
   <!-- DETECTOR -->
   <main id="view-detector" hidden>
     <div class="tool-top">
@@ -375,6 +440,9 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
 
   /* ---------- home content ---------- */
   var SECTIONS = [
+    { h: "التعليم الإلكتروني", d: "أدوات لأعضاء هيئة التدريس والمتدربين", items: [
+      { t: "مولّد الاختبارات", d: "ألصق محتوى محاضرة واحصل على أسئلة اختيار من متعدد وصح/خطأ مع الإجابات والشرح.", i: "quiz", open: "quiz" }
+    ]},
     { h: "الوسائط", d: "إنشاء وتحليل المحتوى المرئي والنصي", items: [
       { t: "المحادثات", d: "محادثة ذكية مع Claude باللغة العربية.", i: "chat", open: "chat" },
       { t: "بطاقات مشاركة", d: "تصميم صور جاهزة للنشر على شبكات التواصل.", i: "spark" },
@@ -415,7 +483,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   });
 
   /* ---------- navigation ---------- */
-  var VIEWS = ["home", "visualize", "linguistics", "chat", "detector"];
+  var VIEWS = ["home", "visualize", "linguistics", "chat", "detector", "quiz"];
   function show(v) {
     if (VIEWS.indexOf(v) < 0) v = "home";
     VIEWS.forEach(function (n) { $("#view-" + n).hidden = n !== v; });
@@ -434,9 +502,9 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   var CLAUDE_READY = (window.claude && window.claude.use ? window.claude.use("sample") : Promise.resolve(null)).then(function (s) {
     sample = s;
     if (!s) {
-      ["vGo", "lGo", "cSend", "dGo"].forEach(function (id) { $("#" + id).disabled = true; });
+      ["vGo", "lGo", "cSend", "dGo", "qGo"].forEach(function (id) { $("#" + id).disabled = true; });
       var m = "التشغيل الذكي غير متاح في هذا العرض. افتح الصفحة من حسابك على Claude.";
-      $("#vNote").textContent = m; $("#lNote").textContent = m; $("#cNote").textContent = m; $("#dNote").textContent = m;
+      $("#qNote").textContent = m; $("#vNote").textContent = m; $("#lNote").textContent = m; $("#cNote").textContent = m; $("#dNote").textContent = m;
     }
   });
   function errCopy(e) {
@@ -797,6 +865,114 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
     }
   });
   $("#dStop").addEventListener("click", function () { if (dCtl) dCtl.abort(); });
+
+  /* =========================================================
+     HOME SEARCH
+     ========================================================= */
+  $("#hSearch").addEventListener("input", function () {
+    var q = this.value.trim().toLowerCase(), any = false;
+    $$("#sections .sec").forEach(function (sec) {
+      var shown = 0;
+      $$(".card", sec).forEach(function (c) {
+        var ok = !q || c.textContent.toLowerCase().indexOf(q) >= 0;
+        c.hidden = !ok; if (ok) shown++;
+      });
+      sec.hidden = !shown; if (shown) any = true;
+    });
+    $("#hNone").hidden = any;
+  });
+
+  /* =========================================================
+     QUIZ GENERATOR
+     ========================================================= */
+  var qCtl = null, qData = [], qAnswered = 0, qRight = 0, Q_MAX = 6000;
+  var Q_EX = "التعلم الإلكتروني هو استخدام التقنيات الرقمية لتقديم المحتوى التعليمي وإدارة العملية التعليمية. يشمل التعلم المتزامن الذي يجمع المتعلمين والمعلم في وقت واحد عبر الاجتماعات المرئية، والتعلم غير المتزامن الذي يتيح للمتعلم الدراسة في الوقت المناسب له عبر المحتوى المسجّل والمنتديات. وتُستخدم أنظمة إدارة التعلم مثل Moodle لتنظيم المقررات والواجبات والاختبارات وتتبّع تقدم الطلبة. ومن مزايا التعلم الإلكتروني المرونة في الزمان والمكان وإمكانية إعادة مشاهدة المحاضرات، ومن تحدياته ضعف الاتصال بالإنترنت وانخفاض التفاعل إن لم يُصمَّم المحتوى جيداً.";
+  $("#qEx").addEventListener("click", function () { $("#qText").value = Q_EX; $("#qText").focus(); });
+  $("#qStop").addEventListener("click", function () { if (qCtl) qCtl.abort(); });
+
+  function qScoreText() {
+    $("#qScore").textContent = qData.length ? "أجبت عن " + qAnswered + " من " + qData.length + (qAnswered ? " · الصحيح " + qRight : "") : "الأسئلة";
+  }
+  function qMark(card, qi, chosen) {
+    var q = qData[qi], opts = $$(".opt", card);
+    if (card.dataset.done) return;
+    card.dataset.done = "1";
+    opts.forEach(function (b, i) {
+      b.disabled = true;
+      if (i === q.answer) { b.classList.add("ok"); b.querySelector(".mk").textContent = "✓"; }
+      else if (i === chosen) { b.classList.add("no"); b.querySelector(".mk").textContent = "✗"; }
+    });
+    var ex = card.querySelector(".ex"); if (ex) ex.hidden = false;
+    if (chosen >= 0) { qAnswered++; if (chosen === q.answer) qRight++; qScoreText(); }
+  }
+  function qRender() {
+    var out = $("#qOut"); out.textContent = ""; qAnswered = 0; qRight = 0;
+    var list = document.createElement("div"); list.className = "qlist";
+    qData.forEach(function (q, qi) {
+      var card = document.createElement("div"); card.className = "qcard";
+      var h = document.createElement("h3"); h.textContent = (qi + 1) + ". " + q.q; card.appendChild(h);
+      var box = document.createElement("div"); box.className = "opts";
+      q.options.forEach(function (o, i) {
+        var b = document.createElement("button"); b.type = "button"; b.className = "opt";
+        var mk = document.createElement("span"); mk.className = "mk"; mk.textContent = "○";
+        var tx = document.createElement("span"); tx.textContent = o;
+        b.appendChild(mk); b.appendChild(tx);
+        b.addEventListener("click", function () { qMark(card, qi, i); });
+        box.appendChild(b);
+      });
+      card.appendChild(box);
+      if (q.explain) { var ex = document.createElement("p"); ex.className = "ex"; ex.hidden = true; ex.textContent = "الشرح: " + q.explain; card.appendChild(ex); }
+      list.appendChild(card);
+    });
+    out.appendChild(list); qScoreText();
+    $("#qReveal").disabled = false; $("#qCopy").disabled = false;
+  }
+  function qClean(arr) {
+    if (!Array.isArray(arr)) return [];
+    return arr.map(function (x) {
+      if (!x || typeof x.q !== "string" || !Array.isArray(x.options) || x.options.length < 2) return null;
+      var a = Number(x.answer);
+      if (!(a >= 0 && a < x.options.length)) return null;
+      return { q: x.q, options: x.options.map(String), answer: a, explain: x.explain ? String(x.explain) : "" };
+    }).filter(Boolean);
+  }
+  $("#qReveal").addEventListener("click", function () {
+    $$("#qOut .qcard").forEach(function (c, i) { qMark(c, i, -1); });
+  });
+  $("#qCopy").addEventListener("click", function () {
+    var L = ["أ", "ب", "ج", "د", "هـ", "و"];
+    var txt = qData.map(function (q, i) {
+      return (i + 1) + ". " + q.q + "\n" + q.options.map(function (o, k) { return "   " + (L[k] || k + 1) + ") " + o; }).join("\n") +
+        "\n   الإجابة: " + (L[q.answer] || q.answer + 1) + (q.explain ? "\n   الشرح: " + q.explain : "");
+    }).join("\n\n");
+    copyText(txt);
+  });
+  $("#qGo").addEventListener("click", async function () {
+    var txt = $("#qText").value.trim().slice(0, Q_MAX), note = $("#qNote"), out = $("#qOut");
+    note.className = "note";
+    if (txt.length < 150) { note.textContent = "المحتوى قصير. ألصق فقرة لا تقل عن نحو 150 حرفاً."; return; }
+    await CLAUDE_READY; if (!sample) return;
+    var n = $("#qCount").value, type = $("#qType").value, lv = $("#qLevel").value;
+    var tmap = { mixed: "a mix of multiple-choice (4 options) and true/false questions", mcq: "only multiple-choice questions with exactly 4 options", tf: "only true/false questions with options [\"صح\",\"خطأ\"]" };
+    var lmap = { easy: "easy recall", medium: "medium difficulty requiring understanding", hard: "hard questions requiring application and analysis" };
+    var prompt = "Write " + n + " exam questions from the content below: " + tmap[type] + ", level: " + lmap[lv] + ". " +
+      "Use ONLY facts stated in the content; do not invent facts. Write in the same language as the content (Arabic if Arabic). Spread questions across the whole content and vary the position of the correct answer. " +
+      "Reply with ONLY a JSON array, no markdown fences, where each item is {\"q\": question text, \"options\": array of option strings, \"answer\": zero-based index of the correct option, \"explain\": one short sentence saying why it is correct}.\n\nContent:\n" + txt;
+    qCtl = new AbortController(); $("#qGo").hidden = true; $("#qStop").hidden = false; note.textContent = "";
+    ["qReveal", "qCopy"].forEach(function (id) { $("#" + id).disabled = true; });
+    out.innerHTML = ""; var p = document.createElement("p"); p.className = "empty"; pending(p, "Claude يصوغ الأسئلة…"); out.appendChild(p);
+    try {
+      var arr = await sample.json(prompt, { signal: qCtl.signal, cache: false });
+      qData = qClean(arr);
+      if (!qData.length) throw { code: "invalid_json" };
+      qRender();
+    } catch (e) {
+      out.innerHTML = '<p class="empty">' + (e && e.code === "cancelled" ? "تم الإيقاف." : "تعذّر إنشاء الأسئلة.") + "</p>";
+      if (!e || e.code !== "cancelled") { note.className = "note err"; note.textContent = e && e.code === "invalid_json" ? "لم يرجع الناتج بصيغة صالحة. أعد المحاولة أو قلّل عدد الأسئلة." : errCopy(e); }
+    } finally {
+      $("#qGo").hidden = false; $("#qStop").hidden = true; qCtl = null;
+    }
+  });
 
   show((location.hash || "").replace("#", ""));
 })();
