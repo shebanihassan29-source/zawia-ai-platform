@@ -35,6 +35,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7}
 button,select,textarea,input{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -294,7 +295,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
           </select>
         </div>
         <label class="lbl" for="lText">النص</label>
-        <textarea id="lText" placeholder="ألصق النص هنا…"></textarea>
+        <textarea id="lText" maxlength="12000" placeholder="ألصق النص هنا…"></textarea>
         <div class="row">
           <button class="btn primary" type="button" id="lGo"><svg class="i"><use href="#i-spark"/></svg>نفّذ</button>
           <button class="btn" type="button" id="lStop" hidden><svg class="i"><use href="#i-stop"/></svg>إيقاف</button>
@@ -324,7 +325,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
       <div class="msgs" id="cMsgs" aria-live="polite"><p class="empty">اكتب سؤالك أو مهمتك، مثل: «ساعدني في كتابة خطة أسبوعية لمقرر التعلم الإلكتروني».</p></div>
       <div class="chat-in">
         <label class="lbl" for="cIn" style="position:absolute;left:-9999px">رسالتك</label>
-        <textarea id="cIn" rows="2" placeholder="اكتب رسالتك… (Enter للإرسال، Shift+Enter لسطر جديد)"></textarea>
+        <textarea id="cIn" rows="2" maxlength="4000" placeholder="اكتب رسالتك… (Enter للإرسال، Shift+Enter لسطر جديد)"></textarea>
         <button class="btn primary" type="button" id="cSend"><svg class="i"><use href="#i-go"/></svg>إرسال</button>
         <button class="btn" type="button" id="cStop" hidden><svg class="i"><use href="#i-stop"/></svg>إيقاف</button>
       </div>
@@ -608,10 +609,23 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
     if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch (e2) {} }
     return undefined;
   }
+  /* قيود الاستخدام في هذا المتصفح (حماية للرصيد المشترك) */
+  var LIMIT_DAILY = 40, LIMIT_GAP_MS = 4000, LIMIT_CHARS = 28000, LIMIT_KEY = "zawia.usage.v1", lastCallAt = 0;
+  function usageToday() {
+    var d = new Date().toISOString().slice(0, 10), u = { d: d, n: 0 };
+    try { var v = JSON.parse(localStorage.getItem(LIMIT_KEY) || "null"); if (v && v.d === d) u = v; } catch (e) {}
+    return u;
+  }
+  function usageBump() { var u = usageToday(); u.n++; try { localStorage.setItem(LIMIT_KEY, JSON.stringify(u)); } catch (e) {} }
   function makeRemoteSample(endpoint) {
     async function call(input, opts, asJson) {
       opts = opts || {};
       var msgs = typeof input === "string" ? [{ role: "user", content: input }] : input;
+      var total = 0; msgs.forEach(function (m) { total += String(m.content || "").length; });
+      if (total > LIMIT_CHARS) throw { code: "prompt_too_large", message: "too large" };
+      if (usageToday().n >= LIMIT_DAILY) throw { code: "rate_limited", message: "daily", daily: true };
+      if (Date.now() - lastCallAt < LIMIT_GAP_MS) throw { code: "rate_limited", message: "gap" };
+      lastCallAt = Date.now(); usageBump();
       var res;
       try {
         res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" },
@@ -654,7 +668,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
   function errCopy(e) {
     switch (e && e.code) {
       case "not_granted": return "لم تسمح للصفحة باستخدام Claude. أعد المحاولة ووافق عند ظهور الطلب.";
-      case "rate_limited": return "تجاوزت حد الاستخدام الحالي. انتظر قليلاً ثم أعد المحاولة.";
+      case "rate_limited": return e.daily ? "بلغت الحد اليومي للاستخدام في هذا المتصفح. يمكنك المتابعة غداً." : "تجاوزت حد الاستخدام الحالي. انتظر بضع ثوانٍ ثم أعد المحاولة.";
       case "session_expired": return "انتهت الجلسة. سجّل الدخول مرة أخرى.";
       case "sampling_disabled": return "ميزة Claude غير متاحة لهذا الحساب.";
       case "refused": return "تعذّر تنفيذ هذا الطلب. عدّل الوصف وأعد المحاولة.";
