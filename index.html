@@ -621,7 +621,11 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
         throw { code: "upstream_error", message: String(e) };
       }
       if (res.status === 429) throw { code: "rate_limited", message: "rate" };
-      if (!res.ok) throw { code: "upstream_error", message: "http " + res.status };
+      if (!res.ok) {
+        var det = "";
+        try { var ej = await res.json(); det = String(ej.detail || ej.error || ""); } catch (e0) {}
+        throw { code: "upstream_error", message: "HTTP " + res.status + (det ? " · " + det : "") };
+      }
       var data = await res.json(), text = String(data.text || "").trim();
       if (!text) throw { code: "empty_completion", message: "empty" };
       if (opts.onText) opts.onText({ text: text, delta: text });
@@ -655,7 +659,7 @@ textarea:focus,select:focus{outline:2px solid var(--brand);outline-offset:0;bord
       case "sampling_disabled": return "ميزة Claude غير متاحة لهذا الحساب.";
       case "refused": return "تعذّر تنفيذ هذا الطلب. عدّل الوصف وأعد المحاولة.";
       case "prompt_too_large": return "النص طويل جداً. اختصره وأعد المحاولة.";
-      default: return "حدث خطأ أثناء الاتصال. أعد المحاولة.";
+      default: return "حدث خطأ أثناء الاتصال. أعد المحاولة." + (e && e.message ? " [" + e.message + "]" : "");
     }
   }
   function pending(el, msg) { el.innerHTML = '<span class="spin"></span>' + msg; }
